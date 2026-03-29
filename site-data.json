@@ -1,0 +1,145 @@
+{
+  "_meta": {
+    "version": 1,
+    "lastEdited": "2026-03-28T00:00:00Z",
+    "editedBy": "initial"
+  },
+  "seo": {
+    "title": "Jade's Spice — Meal Prep That Feels Like Home | @jades_spice",
+    "description": "Asian-inspired meal prep with custom macros for your fitness goals. Freshly made from scratch with organic ingredients, served in glass containers. Beautiful moments on your lips.",
+    "ogTitle": "Jade's Spice — Meal Prep That Feels Like Home",
+    "ogDescription": "Asian-inspired meal prep with custom macros. Freshly made from scratch with love."
+  },
+  "contact": {
+    "instagram": "https://www.instagram.com/jades_spice/",
+    "instagramHandle": "@jades_spice",
+    "email": "",
+    "phone": "",
+    "orderLink": "https://www.instagram.com/jades_spice/"
+  },
+  "hero": {
+    "tagline": "Asian-inspired meal prep",
+    "headline": "MEAL PREP\nTHAT FEELS\nLIKE HOME",
+    "description": "Custom macro-tracked meals made fresh from scratch with organic ingredients. Chinese-inspired flavors your fitness goals will thank you for. Served in glass, never plastic.",
+    "ctaText": "Order This Week",
+    "ctaLink": "#order",
+    "secondaryCtaText": "View Menu",
+    "secondaryCtaLink": "#meals",
+    "stats": [
+      { "value": "100", "unit": "%", "label": "From Scratch" },
+      { "value": "0", "unit": "g", "label": "Plastic Used" },
+      { "value": "55", "unit": "g+", "label": "Avg Protein" }
+    ]
+  },
+  "sections": {
+    "featured_meals": {
+      "eyebrow": "This Week's Favorites",
+      "heading": "MEALS THAT HIT\nDIFFERENT",
+      "description": "Every dish is made fresh from scratch with organic ingredients, custom macros for your goals, and flavors that remind you of home.",
+      "items": [
+        {
+          "name": "Szechuan Spicy Chicken",
+          "description": "Tender chicken breast in a fiery Szechuan sauce with stir-fried vegetables and turmeric rice.",
+          "image": "/images/szechuan-chicken.jpg",
+          "tag": "Chinese",
+          "fields": { "protein": "55g", "calories": "445", "carbs": "33g", "fat": "12g" }
+        },
+        {
+          "name": "Hong Shao Rou",
+          "description": "Traditional red braised pork belly, slow-cooked to perfection with star anise, ginger, and soy.",
+          "image": "/images/braised-meat.jpg",
+          "tag": "Chinese",
+          "fields": { "protein": "48g", "calories": "520", "carbs": "28g", "fat": "22g" }
+        },
+        {
+          "name": "Teriyaki Chicken Bowl",
+          "description": "Lean chicken breast with house teriyaki glaze, garlic asparagus, and fluffy jasmine rice.",
+          "image": "/images/chicken-sweetpotato.jpg",
+          "tag": "Fusion",
+          "fields": { "protein": "52g", "calories": "480", "carbs": "40g", "fat": "14g" }
+        },
+        {
+          "name": "Mapo Tofu Power Bowl",
+          "description": "Spicy Sichuan-style tofu with 93% lean ground beef, chili oil, and steamed vegetables.",
+          "image": "/images/beef-stew.jpg",
+          "tag": "Chinese",
+          "fields": { "protein": "42g", "calories": "410", "carbs": "25g", "fat": "18g" }
+        },
+        {
+          "name": "Chili Oil Dumplings",
+          "description": "Handmade dumplings in house chili oil with fresh ginger, scallions, and crispy garlic.",
+          "image": "/images/dumplings.jpg",
+          "tag": "Fusion",
+          "fields": { "protein": "38g", "calories": "390", "carbs": "35g", "fat": "15g" }
+        },
+        {
+          "name": "Wild Salmon & Greens",
+          "description": "Wild-caught Alaska sockeye salmon with organic broccoli, squash, and lemon herb sauce.",
+          "image": "/images/meal-prep-spread.jpg",
+          "tag": "Healthy",
+          "fields": { "protein": "50g", "calories": "420", "carbs": "18g", "fat": "16g" }
+        }
+      ]
+    },
+    "about": {
+      "heading": "HI, I'M JADE",
+      "image": "/images/jade-kitchen.jpg",
+      "paragraphs": [
+        "I grew up watching my family cook incredible Chinese food from scratch — recipes passed down through generations. When I started my fitness journey, I realized that most meal prep services were bland, boring, and full of shortcuts.",
+        "So I started cooking for friends. Then friends of friends. Then strangers who became friends. Every meal I make comes from the same place: a genuine love for food and a deep care for what you put in your body.",
+        "I'm not a corporation. I'm the person who shops for your organic broccoli at 6am, hand-folds your dumplings, and tracks your macros because I want you to hit your goals as badly as you do."
+      ],
+      "values": ["Organic Ingredients", "Glass Containers", "Custom Macros", "Made With Love"]
+    },
+    "testimonials": {
+      "items": [
+        {
+          "text": "Honestly the best meal prep I've ever had. The flavors are restaurant-quality but with wholesome, simple ingredients. Jade genuinely cares about what she's putting in your food.",
+          "author": "Happy Customer",
+          "source": "via Instagram",
+          "rating": 5
+        },
+        {
+          "text": "I've tried so many meal prep companies and none of them come close. The Szechuan chicken and dumplings are on another level. My gym gains have never been better.",
+          "author": "Fitness Enthusiast",
+          "source": "via Instagram",
+          "rating": 5
+        },
+        {
+          "text": "First order and I'm already hooked. The glass containers, the macro tracking, the actual flavor — everything about this is a cut above. Highly recommend.",
+          "author": "New Customer",
+          "source": "via Instagram",
+          "rating": 5
+        }
+      ]
+    },
+    "kitchen": {
+      "eyebrow": "Watch Jade Cook",
+      "heading": "IN THE\nKITCHEN",
+      "description": "See exactly how your meals are made — from scratch, with love, in Jade's home kitchen. No shortcuts, no secrets.",
+      "items": [
+        {
+          "title": "Weekly Meal Prep",
+          "description": "Watch the full process — turmeric rice, salmon, chicken, and fresh veggies prepped for the week.",
+          "image": "/images/turmeric-prep-menu.jpg",
+          "label": "Meal Prep Day",
+          "link": "https://www.instagram.com/jades_spice/"
+        },
+        {
+          "title": "Bulk Prep Session",
+          "description": "Salmon, shredded chicken, rice, broccoli, and asparagus — everything portioned in glass containers.",
+          "image": "/images/big-prep-spread.jpg",
+          "label": "Batch Cooking",
+          "link": "https://www.instagram.com/jades_spice/"
+        },
+        {
+          "title": "Slow-Cooked Beef Stew",
+          "description": "Traditional Chinese-style beef stew cooked low and slow with potatoes, carrots, and star anise.",
+          "image": "/images/beef-stew-closeup.jpg",
+          "label": "From Scratch",
+          "link": "https://www.instagram.com/jades_spice/"
+        }
+      ]
+    }
+  }
+}

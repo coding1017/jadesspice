@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webnari CMS</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Webnari CMS content management panel.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   TOKENS
+   ================================================================ */
+:root {
+  --black: #08060E;
+  --dark: #0E0B18;
+  --surface: #141024;
+  --surface2: #1A1530;
+  --border: #2A2244;
+  --accent: #A855F7;
+  --accent2: #C084FC;
+  --white: #F8F0FF;
+  --muted: #7A6A94;
+  --text: #B8A8D4;
+  --red: #EF4444;
+  --red2: #7F1D1D;
+  --green: #22C55E;
+  --green2: #14532D;
+  --font-head: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+  --sidebar-w: 240px;
+  --topbar-h: 64px;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: 0.2s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--font-body); background: var(--black); color: var(--text);
+  height: 100%; overflow: hidden; line-height: 1.5; font-size: 14px;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: var(--font-body); border: none; background: none; color: inherit; font-size: 14px; }
+input, textarea, select {
+  font-family: var(--font-body); font-size: 14px; color: var(--white);
+  background: var(--dark); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 14px; outline: none; transition: border-color var(--transition); width: 100%;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+input::placeholder, textarea::placeholder { color: var(--muted); }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A6A94' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+/* ================================================================
+   PASSWORD GATE
+   ================================================================ */
+.gate-overlay {
+  position: fixed; inset: 0; background: var(--black); z-index: 2000;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.gate-overlay.hidden { display: none; }
+.gate-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 40px; max-width: 380px; width: 90%; text-align: center;
+}
+.gate-icon {
+  width: 56px; height: 56px; border-radius: 14px; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+.gate-icon svg { width: 28px; height: 28px; color: var(--white); }
+.gate-title {
+  font-family: var(--font-head); font-weight: 800; font-size: 24px;
+  color: var(--white); margin-bottom: 8px; letter-spacing: 0.02em;
+}
+.gate-sub { color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+.gate-input-wrap { position: relative; margin-bottom: 16px; }
+.gate-input-wrap input { width: 100%; padding-right: 44px; }
+.gate-input-wrap button {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); transition: background var(--transition);
+}
+.gate-input-wrap button:hover { background: rgba(255,255,255,0.06); }
+.gate-input-wrap button svg { width: 16px; height: 16px; color: var(--muted); }
+.gate-btn {
+  width: 100%; padding: 12px; border-radius: var(--radius-sm); font-weight: 700;
+  font-size: 15px; color: var(--black); transition: opacity var(--transition);
+  font-family: var(--font-head); letter-spacing: 0.04em;
+}
+.gate-btn:hover { opacity: 0.9; }
+.gate-error {
+  color: var(--red); font-size: 13px; margin-top: 12px; opacity: 0;
+  transition: opacity var(--transition);
+}
+.gate-error.visible { opacity: 1; }
+@keyframes gateShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+.gate-box.shake { animation: gateShake 0.4s ease; }
+
+/* ================================================================
+   TOKEN MODAL
+   ================================================================ */
+.token-overlay {
+  position: fixed; inset: 0; background: rgba(8,6,14,0.92); z-index: 1500;
+  display: flex; align-items: center; justify-content: center;
+}
+.token-overlay.hidden { display: none; }
+.token-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 32px; max-width: 460px; width: 90%;
+}
+.token-title {
+  font-family: var(--font-head); font-weight: 800; font-size: 20px;
+  color: var(--white); margin-bottom: 8px;
+}
+.token-desc { color: var(--muted); margin-bottom: 20px; font-size: 13px; line-height: 1.6; }
+.token-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.token-error { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
+
+/* ================================================================
+   SIDEBAR
+   ================================================================ */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w);
+  background: var(--dark); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.sidebar-logo-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sidebar-logo-icon svg { width: 20px; height: 20px; }
+.sidebar-logo-text {
+  font-family: var(--font-head); font-weight: 800; font-size: 18px;
+  color: var(--white); letter-spacing: 0.02em;
+}
+.sidebar-logo-sub { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; }
+
+.sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+.sidebar-nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px; font-weight: 500; font-size: 14px;
+  color: var(--muted); transition: all var(--transition);
+  border-left: 3px solid transparent; cursor: pointer;
+}
+.sidebar-nav-item:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+.sidebar-nav-item.active { color: var(--white); border-left-color: var(--accent); background: rgba(168,85,247,0.06); }
+.sidebar-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+.sidebar-nav-item.active svg { opacity: 1; }
+.sidebar-divider { height: 1px; background: var(--border); margin: 8px 20px; }
+
+.sidebar-footer {
+  padding: 16px 20px; border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sidebar-status {
+  display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted);
+}
+.sidebar-status-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0;
+}
+.sidebar-status-dot.disconnected { background: var(--red); }
+.sidebar-footer a {
+  display: flex; align-items: center; gap: 8px; font-size: 13px;
+  color: var(--muted); transition: color var(--transition);
+}
+.sidebar-footer a:hover { color: var(--accent); }
+.sidebar-footer a svg { width: 14px; height: 14px; }
+
+/* ================================================================
+   MAIN LAYOUT
+   ================================================================ */
+.main { margin-left: var(--sidebar-w); height: 100%; display: flex; flex-direction: column; }
+.topbar {
+  height: var(--topbar-h); padding: 0 32px;
+  display: flex; align-items: center; gap: 16px;
+  background: var(--dark); border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.topbar-title {
+  font-family: var(--font-head); font-weight: 800; font-size: 22px; color: var(--white);
+}
+.topbar-spacer { flex: 1; }
+.hamburger {
+  display: none; width: 40px; height: 40px; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); transition: background var(--transition);
+}
+.hamburger:hover { background: rgba(255,255,255,0.06); }
+.hamburger svg { width: 22px; height: 22px; color: var(--white); }
+
+.content { flex: 1; overflow-y: auto; padding: 32px; }
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600;
+  font-size: 14px; transition: all var(--transition); white-space: nowrap;
+}
+.btn svg { width: 16px; height: 16px; }
+.btn-accent { background: var(--accent); color: var(--white); }
+.btn-accent:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-surface { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-surface:hover { border-color: var(--muted); color: var(--white); }
+.btn-red { background: var(--red2); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.btn-red:hover { background: rgba(239,68,68,0.2); }
+.btn-ghost { color: var(--muted); padding: 8px 12px; }
+.btn-ghost:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-sm svg { width: 14px; height: 14px; }
+
+/* ================================================================
+   CARD / FIELD
+   ================================================================ */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.card + .card { margin-top: 20px; }
+.card-title {
+  font-family: var(--font-head); font-weight: 700; font-size: 14px;
+  color: var(--white); margin-bottom: 16px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field + .field { margin-top: 14px; }
+.field-label { font-weight: 600; font-size: 13px; color: var(--muted); }
+.field-hint { font-size: 12px; color: var(--muted); opacity: 0.7; }
+.field-char-count { font-size: 12px; color: var(--muted); text-align: right; }
+
+/* ================================================================
+   SECTION EDITOR — CARD LIST
+   ================================================================ */
+.card-list-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+}
+.card-list-header-title {
+  font-family: var(--font-head); font-weight: 800; font-size: 20px; color: var(--white);
+}
+
+.list-item {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 12px; overflow: hidden;
+}
+.list-item-header {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  cursor: pointer; transition: background var(--transition);
+}
+.list-item-header:hover { background: rgba(255,255,255,0.02); }
+.list-item-thumb {
+  width: 40px; height: 40px; border-radius: 6px; overflow: hidden;
+  background: var(--surface2); flex-shrink: 0;
+}
+.list-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.list-item-thumb-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+}
+.list-item-thumb-placeholder svg { width: 20px; height: 20px; color: var(--muted); }
+.list-item-name { flex: 1; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list-item-order {
+  display: flex; gap: 2px; flex-shrink: 0;
+}
+.list-item-order button {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); transition: background var(--transition);
+}
+.list-item-order button:hover { background: rgba(255,255,255,0.06); }
+.list-item-order button svg { width: 14px; height: 14px; color: var(--muted); }
+.list-item-toggle svg {
+  width: 18px; height: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0;
+}
+.list-item-toggle.open svg { transform: rotate(180deg); }
+.list-item-body { padding: 0 16px 16px; display: none; border-top: 1px solid var(--border); }
+.list-item-body.open { display: block; padding-top: 16px; }
+.list-item-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.list-item-fields .field-full { grid-column: span 2; }
+.list-item-delete { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+/* Grouped fields (e.g. macros) */
+.field-group-label {
+  font-family: var(--font-head); font-weight: 700; font-size: 12px;
+  color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase;
+  grid-column: span 2; margin-top: 4px;
+}
+
+/* ================================================================
+   IMAGE PREVIEW
+   ================================================================ */
+.img-preview {
+  position: relative; width: 100%; height: 140px; border-radius: var(--radius-sm);
+  overflow: hidden; background: var(--surface2); margin-bottom: 8px;
+}
+.img-preview img { width: 100%; height: 100%; object-fit: cover; }
+.img-preview-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 8px;
+}
+.img-preview-placeholder svg { width: 32px; height: 32px; color: var(--muted); }
+.img-preview-placeholder span { font-size: 12px; color: var(--muted); }
+.img-preview-actions {
+  position: absolute; inset: 0; background: rgba(8,6,14,0.6);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  opacity: 0; transition: opacity var(--transition);
+}
+.img-preview:hover .img-preview-actions { opacity: 1; }
+.img-preview-btn {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); cursor: pointer; transition: all var(--transition);
+}
+.img-preview-btn:hover { border-color: var(--white); }
+.img-preview-btn svg { width: 16px; height: 16px; }
+.img-upload-spinner {
+  position: absolute; inset: 0; background: rgba(8,6,14,0.7);
+  display: flex; align-items: center; justify-content: center;
+}
+.spinner {
+  width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ================================================================
+   HERO — STATS EDITOR
+   ================================================================ */
+.stats-editor { margin-top: 20px; }
+.stats-editor-title {
+  font-family: var(--font-head); font-weight: 700; font-size: 14px;
+  color: var(--white); margin-bottom: 12px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.stat-row {
+  display: grid; grid-template-columns: 80px 60px 1fr 36px; gap: 8px;
+  align-items: center; margin-bottom: 8px;
+}
+.stat-row input { padding: 8px 10px; font-size: 13px; }
+.stat-remove {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); transition: background var(--transition);
+}
+.stat-remove:hover { background: rgba(239,68,68,0.15); }
+.stat-remove svg { width: 14px; height: 14px; color: var(--red); }
+
+/* ================================================================
+   RICH TEXT EDITOR
+   ================================================================ */
+.paragraph-list { margin-top: 12px; }
+.paragraph-row {
+  display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px;
+}
+.paragraph-row textarea { flex: 1; min-height: 60px; }
+.paragraph-remove {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); transition: background var(--transition); flex-shrink: 0; margin-top: 6px;
+}
+.paragraph-remove:hover { background: rgba(239,68,68,0.15); }
+.paragraph-remove svg { width: 14px; height: 14px; color: var(--red); }
+
+.values-list { margin-top: 12px; }
+.value-row {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
+}
+.value-row input { flex: 1; padding: 8px 10px; font-size: 13px; }
+
+/* ================================================================
+   PUBLISH BUTTON
+   ================================================================ */
+.publish-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  padding: 14px 28px; border-radius: var(--radius); font-weight: 700;
+  font-size: 15px; color: var(--white); font-family: var(--font-head);
+  letter-spacing: 0.04em; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(80px); transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0; pointer-events: none;
+  display: flex; align-items: center; gap: 10px;
+}
+.publish-btn svg { width: 18px; height: 18px; }
+.publish-btn.visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.publish-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+.publish-btn.visible:hover { transform: translateY(-2px); }
+
+/* ================================================================
+   MODAL
+   ================================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(8,6,14,0.85); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.visible { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 28px; max-width: 420px; width: 90%; transform: translateY(10px); transition: transform 0.2s;
+}
+.modal-overlay.visible .modal { transform: translateY(0); }
+.modal-title {
+  font-family: var(--font-head); font-weight: 800; font-size: 20px;
+  color: var(--white); margin-bottom: 12px;
+}
+.modal-msg { color: var(--text); margin-bottom: 24px; line-height: 1.6; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ================================================================
+   TOAST
+   ================================================================ */
+.toast-container {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 1100;
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+}
+.toast {
+  padding: 12px 20px; border-radius: var(--radius-sm); background: var(--surface);
+  border: 1px solid var(--border); font-weight: 500; color: var(--white);
+  display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  animation: toastIn 0.3s ease; min-width: 260px; max-width: 440px;
+}
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+.toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+.toast.success svg { color: var(--green); }
+.toast.error svg { color: var(--red); }
+.toast.fade-out { animation: toastOut 0.3s ease forwards; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(12px); } }
+
+/* ================================================================
+   EMPTY STATE
+   ================================================================ */
+.empty-state { text-align: center; padding: 60px 20px; }
+.empty-state svg { width: 48px; height: 48px; color: var(--border); margin: 0 auto 16px; }
+.empty-state-title {
+  font-family: var(--font-head); font-weight: 700; font-size: 18px;
+  color: var(--white); margin-bottom: 6px;
+}
+.empty-state-text { color: var(--muted); }
+
+/* ================================================================
+   MOBILE OVERLAY
+   ================================================================ */
+.sidebar-overlay {
+  position: fixed; inset: 0; background: rgba(8,6,14,0.6); z-index: 90;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.sidebar-overlay.visible { opacity: 1; pointer-events: auto; }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .hamburger { display: flex; }
+  .topbar { padding: 0 16px; }
+  .content { padding: 20px 16px; }
+  .list-item-fields { grid-template-columns: 1fr; }
+  .list-item-fields .field-full { grid-column: span 1; }
+  .field-group-label { grid-column: span 1; }
+  .stat-row { grid-template-columns: 1fr 1fr 1fr 36px; }
+  .publish-btn { bottom: 16px; right: 16px; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     PASSWORD GATE
+     ================================================================ -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-box" id="gateBox">
+    <div class="gate-icon" id="gateIcon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    </div>
+    <div class="gate-title" id="gateTitle">Content Manager</div>
+    <div class="gate-sub">Enter the password to continue</div>
+    <div class="gate-input-wrap">
+      <input type="password" id="gatePassword" placeholder="Password" autocomplete="off">
+      <button type="button" onclick="togglePasswordVisibility()" id="gateToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <button class="gate-btn" id="gateBtn" onclick="submitPassword()">Unlock</button>
+    <div class="gate-error" id="gateError">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- ================================================================
+     TOKEN MODAL
+     ================================================================ -->
+<div class="token-overlay hidden" id="tokenOverlay">
+  <div class="token-box">
+    <div class="token-title">Connect to GitHub</div>
+    <div class="token-desc">
+      Enter a GitHub Personal Access Token with repo access. This is needed to read and update site content. Your token is stored locally in this browser only.
+    </div>
+    <div class="field">
+      <label class="field-label">Personal Access Token</label>
+      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    </div>
+    <div class="token-error" id="tokenError">Could not connect. Check your token and try again.</div>
+    <div class="token-actions">
+      <button class="btn btn-surface" onclick="skipToken()">Skip for Now</button>
+      <button class="btn btn-accent" onclick="submitToken()">Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ================================================================
+     SIDEBAR
+     ================================================================ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon" id="sidebarLogoIcon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#08060E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="sidebar-logo-text" id="sidebarSiteName">Site Name</div>
+      <div class="sidebar-logo-sub" id="sidebarTagline">Content Manager</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav"></nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-status" id="sidebarStatus">
+      <div class="sidebar-status-dot disconnected" id="statusDot"></div>
+      <span id="statusText">Not connected</span>
+    </div>
+    <a href="#" id="sidebarSiteLink" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View Live Site
+    </a>
+  </div>
+</aside>
+
+<!-- ================================================================
+     MAIN CONTENT
+     ================================================================ -->
+<div class="main">
+  <div class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="topbar-title" id="topbarTitle">Loading...</span>
+    <div class="topbar-spacer"></div>
+  </div>
+  <div class="content" id="contentArea"></div>
+</div>
+
+<!-- ================================================================
+     PUBLISH BUTTON
+     ================================================================ -->
+<button class="publish-btn" id="publishBtn" onclick="publishChanges()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+  Publish Changes
+</button>
+
+<!-- ================================================================
+     MODAL
+     ================================================================ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-msg" id="modalMsg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-surface" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-accent" id="modalConfirmBtn" onclick="modalConfirmAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="globalFileInput" accept="image/*" style="display:none">
+
+<!-- Config (must be loaded before main script) -->
+<script src="config.js"></script>
+<script>
+/* =================================================================
+   Webnari CMS — Config-Driven Content Manager
+   ================================================================= */
+
+/* ── SVG Icon Map ──────────────────────────────────────────────── */
+var ICONS = {
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  'at-sign': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 006 0v-1a10 10 0 10-3.92 7.94"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  utensils: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>',
+  'external-link': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+  alertCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+};
+
+function icon(name) {
+  return ICONS[name] || ICONS['alertCircle'];
+}
+
+/* ── State ─────────────────────────────────────────────────────── */
+var activeSection = null;
+var siteData = null;
+var originalDataJSON = '';
+var dataSHA = null;
+var isDirty = false;
+var modalCallback = null;
+var uploadingCount = 0;
+
+/* ── Utility ───────────────────────────────────────────────────── */
+function escHtml(str) {
+  if (!str) return '';
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(str));
+  return d.innerHTML;
+}
+
+function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function getNestedValue(obj, path) {
+  var keys = path.split('.');
+  var current = obj;
+  for (var i = 0; i < keys.length; i++) {
+    if (current == null) return undefined;
+    current = current[keys[i]];
+  }
+  return current;
+}
+
+function setNestedValue(obj, path, value) {
+  var keys = path.split('.');
+  var current = obj;
+  for (var i = 0; i < keys.length - 1; i++) {
+    if (current[keys[i]] == null) current[keys[i]] = {};
+    current = current[keys[i]];
+  }
+  current[keys[keys.length - 1]] = value;
+}
+
+/* ── Apply Config Theme ────────────────────────────────────────── */
+function applyTheme() {
+  if (!CMS_CONFIG) return;
+  var accent = CMS_CONFIG.accentColor || '#A855F7';
+  var gradient = CMS_CONFIG.accentGradient || accent;
+  document.documentElement.style.setProperty('--accent', accent);
+
+  document.getElementById('gateIcon').style.background = gradient;
+  document.getElementById('gateBtn').style.background = gradient;
+  document.getElementById('sidebarLogoIcon').style.background = gradient;
+  document.getElementById('publishBtn').style.background = gradient;
+
+  document.getElementById('gateTitle').textContent = CMS_CONFIG.siteName || 'Content Manager';
+  document.getElementById('sidebarSiteName').textContent = CMS_CONFIG.siteName || 'Site';
+  document.getElementById('sidebarTagline').textContent = CMS_CONFIG.siteTagline || 'Content Manager';
+
+  // Update active sidebar color references
+  var style = document.createElement('style');
+  style.textContent =
+    '.sidebar-nav-item.active { border-left-color: ' + accent + '; background: ' + accent + '10; }' +
+    'input:focus, textarea:focus, select:focus { border-color: ' + accent + '; }' +
+    '.btn-accent { background: ' + gradient + '; }';
+  document.head.appendChild(style);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PASSWORD GATE
+   ══════════════════════════════════════════════════════════════════ */
+function togglePasswordVisibility() {
+  var inp = document.getElementById('gatePassword');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function hashPassword(pw) {
+  var encoder = new TextEncoder();
+  var data = encoder.encode(pw);
+  var hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  var hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+async function submitPassword() {
+  var pw = document.getElementById('gatePassword').value;
+  if (!pw) return;
+
+  var hash = await hashPassword(pw);
+  if (hash === CMS_CONFIG.passwordHash) {
+    sessionStorage.setItem('webnari_cms_auth', 'true');
+    document.getElementById('gateOverlay').classList.add('hidden');
+    initApp();
+  } else {
+    document.getElementById('gateBox').classList.add('shake');
+    document.getElementById('gateError').classList.add('visible');
+    setTimeout(function() {
+      document.getElementById('gateBox').classList.remove('shake');
+    }, 400);
+  }
+}
+
+document.getElementById('gatePassword').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitPassword();
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   GITHUB API MODULE
+   ══════════════════════════════════════════════════════════════════ */
+var GitHub = {
+  tokenKey: function() {
+    return 'webnari_cms_token_' + CMS_CONFIG.github.repo;
+  },
+  token: function() {
+    return localStorage.getItem(this.tokenKey());
+  },
+  headers: function() {
+    return {
+      'Authorization': 'Bearer ' + this.token(),
+      'Accept': 'application/vnd.github.v3+json'
+    };
+  },
+  apiBase: function() {
+    return 'https://api.github.com/repos/' + CMS_CONFIG.github.owner + '/' + CMS_CONFIG.github.repo;
+  },
+  getFile: function(path) {
+    return fetch(this.apiBase() + '/contents/' + path + '?ref=' + CMS_CONFIG.github.branch, {
+      headers: this.headers()
+    }).then(function(r) {
+      if (!r.ok) throw new Error('GitHub API error: ' + r.status);
+      return r.json();
+    }).then(function(data) {
+      var decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+      return { content: JSON.parse(decoded), sha: data.sha };
+    });
+  },
+  putFile: function(path, content, sha, message) {
+    var body = {
+      message: message || 'Update via CMS',
+      content: btoa(unescape(encodeURIComponent(typeof content === 'string' ? content : JSON.stringify(content, null, 2)))),
+      branch: CMS_CONFIG.github.branch
+    };
+    if (sha) body.sha = sha;
+    return fetch(this.apiBase() + '/contents/' + path, {
+      method: 'PUT',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, this.headers()),
+      body: JSON.stringify(body)
+    }).then(function(r) {
+      if (!r.ok) throw new Error('GitHub API error: ' + r.status);
+      return r.json();
+    });
+  },
+  uploadImage: function(file, callback) {
+    var timestamp = Date.now();
+    var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
+    var filename = timestamp + '-' + safeName;
+    if (!/\.jpe?g$/i.test(filename)) {
+      filename = filename.replace(/\.[^.]+$/, '') + '.jpg';
+    }
+    var remotePath = CMS_CONFIG.github.imageDir + '/' + filename;
+    var localPath = '/' + remotePath;
+
+    resizeImage(file, 1200, 0.85, function(base64Data) {
+      var rawBase64 = base64Data.split(',')[1];
+      var body = {
+        message: 'Upload image: ' + filename,
+        content: rawBase64,
+        branch: CMS_CONFIG.github.branch
+      };
+      fetch(GitHub.apiBase() + '/contents/' + remotePath, {
+        method: 'PUT',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, GitHub.headers()),
+        body: JSON.stringify(body)
+      }).then(function(r) {
+        if (!r.ok) throw new Error('Upload failed: ' + r.status);
+        return r.json();
+      }).then(function() {
+        if (callback) callback(null, localPath);
+      }).catch(function(err) {
+        if (callback) callback(err, null);
+      });
+    });
+  },
+  testConnection: function() {
+    return fetch(this.apiBase(), { headers: this.headers() })
+      .then(function(r) { return r.ok; })
+      .catch(function() { return false; });
+  }
+};
+
+function resizeImage(file, maxWidth, quality, callback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width;
+      var h = img.height;
+      if (w > maxWidth) {
+        h = Math.round(h * (maxWidth / w));
+        w = maxWidth;
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TOKEN SETUP
+   ══════════════════════════════════════════════════════════════════ */
+function checkToken() {
+  if (GitHub.token()) {
+    GitHub.testConnection().then(function(ok) {
+      if (ok) {
+        setConnectedStatus(true);
+        loadSiteData();
+      } else {
+        localStorage.removeItem(GitHub.tokenKey());
+        showTokenModal();
+      }
+    });
+  } else {
+    showTokenModal();
+  }
+}
+
+function showTokenModal() {
+  document.getElementById('tokenOverlay').classList.remove('hidden');
+}
+
+function submitToken() {
+  var tok = document.getElementById('tokenInput').value.trim();
+  if (!tok) return;
+
+  localStorage.setItem(GitHub.tokenKey(), tok);
+  GitHub.testConnection().then(function(ok) {
+    if (ok) {
+      document.getElementById('tokenOverlay').classList.add('hidden');
+      document.getElementById('tokenError').style.display = 'none';
+      setConnectedStatus(true);
+      loadSiteData();
+    } else {
+      localStorage.removeItem(GitHub.tokenKey());
+      document.getElementById('tokenError').style.display = 'block';
+    }
+  });
+}
+
+function skipToken() {
+  document.getElementById('tokenOverlay').classList.add('hidden');
+  setConnectedStatus(false);
+  showToast('Running without GitHub. Changes cannot be published.', 'error');
+  // Load with empty data
+  siteData = { _meta: { version: 1, lastEdited: new Date().toISOString(), editedBy: 'local' } };
+  originalDataJSON = JSON.stringify(siteData);
+  buildSidebar();
+  if (CMS_CONFIG.sections.length > 0) {
+    navigateToSection(CMS_CONFIG.sections[0].key);
+  }
+}
+
+function setConnectedStatus(connected) {
+  var dot = document.getElementById('statusDot');
+  var text = document.getElementById('statusText');
+  if (connected) {
+    dot.classList.remove('disconnected');
+    text.textContent = 'Connected to GitHub';
+  } else {
+    dot.classList.add('disconnected');
+    text.textContent = 'Not connected';
+  }
+}
+
+document.getElementById('tokenInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitToken();
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   SIDEBAR & NAVIGATION
+   ══════════════════════════════════════════════════════════════════ */
+function buildSidebar() {
+  var nav = document.getElementById('sidebarNav');
+  var html = '';
+  for (var i = 0; i < CMS_CONFIG.sections.length; i++) {
+    var s = CMS_CONFIG.sections[i];
+    var isActive = activeSection === s.key ? ' active' : '';
+    html += '<div class="sidebar-nav-item' + isActive + '" data-section="' + escHtml(s.key) + '" onclick="navigateToSection(\'' + escHtml(s.key) + '\')">';
+    html += icon(s.icon || 'settings');
+    html += escHtml(s.label);
+    html += '</div>';
+  }
+  nav.innerHTML = html;
+
+  // Live site link
+  var link = document.getElementById('sidebarSiteLink');
+  link.href = 'https://' + CMS_CONFIG.github.owner + '.github.io/' + CMS_CONFIG.github.repo + '/';
+}
+
+function navigateToSection(key) {
+  activeSection = key;
+  buildSidebar();
+  renderSection(key);
+  closeSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('visible');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('visible');
+}
+
+document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+
+/* ══════════════════════════════════════════════════════════════════
+   LOAD SITE DATA
+   ══════════════════════════════════════════════════════════════════ */
+function loadSiteData() {
+  GitHub.getFile(CMS_CONFIG.github.dataFile).then(function(result) {
+    siteData = result.content;
+    dataSHA = result.sha;
+    originalDataJSON = JSON.stringify(siteData);
+    isDirty = false;
+    updatePublishButton();
+
+    buildSidebar();
+    if (CMS_CONFIG.sections.length > 0) {
+      navigateToSection(CMS_CONFIG.sections[0].key);
+    }
+
+    showToast('Site data loaded', 'success');
+  }).catch(function(err) {
+    showToast('Failed to load site data: ' + err.message, 'error');
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MARK DIRTY
+   ══════════════════════════════════════════════════════════════════ */
+function markDirty() {
+  isDirty = true;
+  updatePublishButton();
+}
+
+function updatePublishButton() {
+  var btn = document.getElementById('publishBtn');
+  if (isDirty) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SECTION RENDERER (main dispatcher)
+   ══════════════════════════════════════════════════════════════════ */
+function getSectionConfig(key) {
+  for (var i = 0; i < CMS_CONFIG.sections.length; i++) {
+    if (CMS_CONFIG.sections[i].key === key) return CMS_CONFIG.sections[i];
+  }
+  return null;
+}
+
+function renderSection(key) {
+  var cfg = getSectionConfig(key);
+  if (!cfg) return;
+
+  document.getElementById('topbarTitle').textContent = cfg.label;
+
+  var area = document.getElementById('contentArea');
+  area.scrollTop = 0;
+
+  switch (cfg.type) {
+    case 'key_value':
+      renderKeyValue(area, cfg);
+      break;
+    case 'hero':
+      renderHero(area, cfg);
+      break;
+    case 'card_list':
+      renderCardList(area, cfg);
+      break;
+    case 'rich_text':
+      renderRichText(area, cfg);
+      break;
+    default:
+      area.innerHTML = '<div class="empty-state">' + icon('alertCircle') + '<div class="empty-state-title">Unknown section type</div><div class="empty-state-text">Section type "' + escHtml(cfg.type) + '" is not supported.</div></div>';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   KEY-VALUE EDITOR
+   ══════════════════════════════════════════════════════════════════ */
+function renderKeyValue(container, cfg) {
+  var data = getNestedValue(siteData, cfg.key) || {};
+  var html = '<div class="card">';
+  html += '<div class="card-title">' + escHtml(cfg.label) + '</div>';
+
+  for (var i = 0; i < cfg.fields.length; i++) {
+    var f = cfg.fields[i];
+    var val = data[f.key] || '';
+    html += '<div class="field">';
+    html += '<label class="field-label">' + escHtml(f.label) + '</label>';
+
+    if (f.type === 'textarea') {
+      html += '<textarea data-section="' + escHtml(cfg.key) + '" data-field="' + escHtml(f.key) + '" oninput="onFieldChange(this)"';
+      if (f.maxLength) {
+        html += ' maxlength="' + f.maxLength + '"';
+      }
+      html += ' rows="3">' + escHtml(val) + '</textarea>';
+      if (f.maxLength) {
+        html += '<div class="field-char-count">' + val.length + ' / ' + f.maxLength + '</div>';
+      }
+    } else {
+      html += '<input type="text" data-section="' + escHtml(cfg.key) + '" data-field="' + escHtml(f.key) + '" value="' + escHtml(val) + '" oninput="onFieldChange(this)"';
+      if (f.placeholder) html += ' placeholder="' + escHtml(f.placeholder) + '"';
+      html += '>';
+    }
+
+    if (f.help) {
+      html += '<div class="field-hint">' + escHtml(f.help) + '</div>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function onFieldChange(el) {
+  var section = el.getAttribute('data-section');
+  var field = el.getAttribute('data-field');
+  var val = el.value;
+
+  var data = getNestedValue(siteData, section);
+  if (!data) {
+    setNestedValue(siteData, section, {});
+    data = getNestedValue(siteData, section);
+  }
+  data[field] = val;
+  markDirty();
+
+  // Update char count if textarea with maxLength
+  if (el.tagName === 'TEXTAREA' && el.maxLength > 0) {
+    var counter = el.parentElement.querySelector('.field-char-count');
+    if (counter) counter.textContent = val.length + ' / ' + el.maxLength;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO EDITOR
+   ══════════════════════════════════════════════════════════════════ */
+function renderHero(container, cfg) {
+  var data = getNestedValue(siteData, cfg.key) || {};
+  var html = '<div class="card">';
+  html += '<div class="card-title">' + escHtml(cfg.label) + '</div>';
+
+  for (var i = 0; i < cfg.fields.length; i++) {
+    var f = cfg.fields[i];
+    var val = data[f.key] || '';
+    html += '<div class="field">';
+    html += '<label class="field-label">' + escHtml(f.label) + '</label>';
+
+    if (f.type === 'textarea') {
+      html += '<textarea data-section="' + escHtml(cfg.key) + '" data-field="' + escHtml(f.key) + '" oninput="onFieldChange(this)" rows="3">' + escHtml(val) + '</textarea>';
+    } else {
+      html += '<input type="text" data-section="' + escHtml(cfg.key) + '" data-field="' + escHtml(f.key) + '" value="' + escHtml(val) + '" oninput="onFieldChange(this)"';
+      if (f.placeholder) html += ' placeholder="' + escHtml(f.placeholder) + '"';
+      html += '>';
+    }
+
+    if (f.help) {
+      html += '<div class="field-hint">' + escHtml(f.help) + '</div>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  // Stats editor
+  var stats = data.stats || [];
+  html += '<div class="card" style="margin-top:20px">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  html += '<div class="card-title" style="margin-bottom:0">Hero Stats</div>';
+  html += '<button class="btn btn-surface btn-sm" onclick="addHeroStat()">' + icon('plus') + ' Add Stat</button>';
+  html += '</div>';
+  html += '<div class="field-hint" style="margin-bottom:12px">These appear as stat counters in the hero section.</div>';
+  html += '<div id="heroStatsContainer">';
+
+  if (stats.length === 0) {
+    html += '<div class="empty-state" style="padding:24px"><div class="empty-state-text">No stats yet. Click "Add Stat" to begin.</div></div>';
+  } else {
+    // Column headers
+    html += '<div class="stat-row" style="margin-bottom:4px"><span class="field-label">Value</span><span class="field-label">Unit</span><span class="field-label">Label</span><span></span></div>';
+    for (var j = 0; j < stats.length; j++) {
+      var s = stats[j];
+      html += '<div class="stat-row">';
+      html += '<input type="text" value="' + escHtml(s.value || '') + '" data-stat-idx="' + j + '" data-stat-field="value" oninput="onStatChange(this)" placeholder="100">';
+      html += '<input type="text" value="' + escHtml(s.unit || '') + '" data-stat-idx="' + j + '" data-stat-field="unit" oninput="onStatChange(this)" placeholder="%">';
+      html += '<input type="text" value="' + escHtml(s.label || '') + '" data-stat-idx="' + j + '" data-stat-field="label" oninput="onStatChange(this)" placeholder="From Scratch">';
+      html += '<button class="stat-remove" onclick="removeHeroStat(' + j + ')">' + icon('x') + '</button>';
+      html += '</div>';
+    }
+  }
+
+  html += '</div>';
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+function onStatChange(el) {
+  var idx = parseInt(el.getAttribute('data-stat-idx'));
+  var field = el.getAttribute('data-stat-field');
+  var data = getNestedValue(siteData, 'hero');
+  if (!data.stats) data.stats = [];
+  if (data.stats[idx]) {
+    data.stats[idx][field] = el.value;
+    markDirty();
+  }
+}
+
+function addHeroStat() {
+  var data = getNestedValue(siteData, 'hero');
+  if (!data) {
+    setNestedValue(siteData, 'hero', {});
+    data = getNestedValue(siteData, 'hero');
+  }
+  if (!data.stats) data.stats = [];
+  data.stats.push({ value: '', unit: '', label: '' });
+  markDirty();
+  renderSection('hero');
+}
+
+function removeHeroStat(idx) {
+  var data = getNestedValue(siteData, 'hero');
+  if (data && data.stats) {
+    data.stats.splice(idx, 1);
+    markDirty();
+    renderSection('hero');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CARD LIST EDITOR
+   ══════════════════════════════════════════════════════════════════ */
+function renderCardList(container, cfg) {
+  var sectionData = getNestedValue(siteData, cfg.key) || {};
+  var items = sectionData.items || [];
+  var itemLabel = cfg.itemLabel || 'item';
+  var maxItems = cfg.max || 50;
+
+  var html = '';
+  html += '<div class="card-list-header">';
+  html += '<div class="card-list-header-title">' + escHtml(cfg.label) + '</div>';
+  if (items.length < maxItems) {
+    html += '<button class="btn btn-accent btn-sm" onclick="addCardListItem(\'' + escHtml(cfg.key) + '\')">' + icon('plus') + ' Add ' + escHtml(itemLabel.charAt(0).toUpperCase() + itemLabel.slice(1)) + '</button>';
+  }
+  html += '</div>';
+
+  if (items.length === 0) {
+    html += '<div class="empty-state">' + icon('image') + '<div class="empty-state-title">No ' + escHtml(itemLabel) + 's yet</div><div class="empty-state-text">Click the button above to add your first ' + escHtml(itemLabel) + '.</div></div>';
+  } else {
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      html += renderCardListItem(cfg, i, item, items.length);
+    }
+  }
+
+  container.innerHTML = html;
+}
+
+function renderCardListItem(cfg, idx, item, total) {
+  var fields = cfg.fields;
+  // Find name/title field for collapsed display
+  var nameField = 'name';
+  for (var k = 0; k < fields.length; k++) {
+    if (fields[k].key === 'name' || fields[k].key === 'title') { nameField = fields[k].key; break; }
+  }
+  var displayName = getItemFieldValue(item, nameField) || '(Untitled)';
+
+  // Find image field for thumbnail
+  var thumbSrc = '';
+  for (var k2 = 0; k2 < fields.length; k2++) {
+    if (fields[k2].type === 'image') {
+      thumbSrc = getItemFieldValue(item, fields[k2].key) || '';
+      break;
+    }
+  }
+
+  var html = '<div class="list-item" id="list-item-' + idx + '">';
+
+  // Header (collapsed view)
+  html += '<div class="list-item-header" onclick="toggleListItem(' + idx + ')">';
+  html += '<div class="list-item-thumb">';
+  if (thumbSrc) {
+    html += '<img src="' + escHtml(thumbSrc) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">';
+    html += '<div class="list-item-thumb-placeholder" style="display:none">' + icon('image') + '</div>';
+  } else {
+    html += '<div class="list-item-thumb-placeholder">' + icon('image') + '</div>';
+  }
+  html += '</div>';
+  html += '<div class="list-item-name">' + escHtml(displayName) + '</div>';
+
+  // Reorder buttons
+  html += '<div class="list-item-order">';
+  if (idx > 0) {
+    html += '<button onclick="event.stopPropagation();moveCardListItem(\'' + escHtml(cfg.key) + '\',' + idx + ',-1)" title="Move up">' + icon('up') + '</button>';
+  }
+  if (idx < total - 1) {
+    html += '<button onclick="event.stopPropagation();moveCardListItem(\'' + escHtml(cfg.key) + '\',' + idx + ',1)" title="Move down">' + icon('down') + '</button>';
+  }
+  html += '</div>';
+
+  html += '<div class="list-item-toggle" id="toggle-icon-' + idx + '">' + icon('down') + '</div>';
+  html += '</div>';
+
+  // Body (expanded view)
+  html += '<div class="list-item-body" id="list-body-' + idx + '">';
+  html += '<div class="list-item-fields">';
+
+  var currentGroup = null;
+  for (var f = 0; f < fields.length; f++) {
+    var fd = fields[f];
+    var val = getItemFieldValue(item, fd.key) || '';
+
+    // Group label
+    if (fd.group && fd.group !== currentGroup) {
+      currentGroup = fd.group;
+      html += '<div class="field-group-label">' + escHtml(fd.group) + '</div>';
+    }
+
+    var fieldClass = 'field';
+    var isFullWidth = fd.type === 'textarea' || fd.type === 'image';
+    if (isFullWidth) fieldClass += ' field-full';
+
+    html += '<div class="' + fieldClass + '">';
+    html += '<label class="field-label">' + escHtml(fd.label) + '</label>';
+
+    if (fd.type === 'image') {
+      html += renderImageField(cfg.key, idx, fd.key, val);
+    } else if (fd.type === 'textarea') {
+      html += '<textarea data-list-section="' + escHtml(cfg.key) + '" data-list-idx="' + idx + '" data-list-field="' + escHtml(fd.key) + '" oninput="onCardListFieldChange(this)"';
+      if (fd.maxLength) html += ' maxlength="' + fd.maxLength + '"';
+      html += ' rows="3">' + escHtml(val) + '</textarea>';
+      if (fd.maxLength) {
+        html += '<div class="field-char-count">' + val.length + ' / ' + fd.maxLength + '</div>';
+      }
+    } else if (fd.type === 'select') {
+      html += '<select data-list-section="' + escHtml(cfg.key) + '" data-list-idx="' + idx + '" data-list-field="' + escHtml(fd.key) + '" onchange="onCardListFieldChange(this)">';
+      html += '<option value="">-- Select --</option>';
+      var opts = fd.options || [];
+      for (var o = 0; o < opts.length; o++) {
+        var sel = (val === opts[o] || val === String(opts[o])) ? ' selected' : '';
+        html += '<option value="' + escHtml(opts[o]) + '"' + sel + '>' + escHtml(opts[o]) + '</option>';
+      }
+      html += '</select>';
+    } else {
+      html += '<input type="text" data-list-section="' + escHtml(cfg.key) + '" data-list-idx="' + idx + '" data-list-field="' + escHtml(fd.key) + '" value="' + escHtml(val) + '" oninput="onCardListFieldChange(this)"';
+      if (fd.placeholder) html += ' placeholder="' + escHtml(fd.placeholder) + '"';
+      html += '>';
+    }
+
+    if (fd.help) {
+      html += '<div class="field-hint">' + escHtml(fd.help) + '</div>';
+    }
+
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  // Delete button
+  html += '<div class="list-item-delete">';
+  html += '<button class="btn btn-red btn-sm" onclick="deleteCardListItem(\'' + escHtml(cfg.key) + '\',' + idx + ')">' + icon('trash') + ' Delete ' + escHtml(cfg.itemLabel || 'item') + '</button>';
+  html += '</div>';
+
+  html += '</div>';
+  html += '</div>';
+
+  return html;
+}
+
+function renderImageField(sectionKey, itemIdx, fieldKey, currentValue) {
+  var previewId = 'img-preview-' + sectionKey.replace(/\./g, '-') + '-' + itemIdx + '-' + fieldKey;
+  var html = '<div class="img-preview" id="' + previewId + '">';
+  if (currentValue) {
+    html += '<img src="' + escHtml(currentValue) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">';
+    html += '<div class="img-preview-placeholder" style="display:none">' + icon('image') + '<span>Image not found</span></div>';
+    html += '<div class="img-preview-actions">';
+    html += '<button class="img-preview-btn" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" title="Replace">' + icon('upload') + '</button>';
+    html += '<button class="img-preview-btn" onclick="removeImage(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" title="Remove" style="color:var(--red)">' + icon('x') + '</button>';
+    html += '</div>';
+  } else {
+    html += '<div class="img-preview-placeholder" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" style="cursor:pointer">' + icon('upload') + '<span>Click to upload</span></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function getItemFieldValue(item, fieldKey) {
+  // Support nested field keys like "fields.protein"
+  var parts = fieldKey.split('.');
+  var current = item;
+  for (var i = 0; i < parts.length; i++) {
+    if (current == null) return '';
+    current = current[parts[i]];
+  }
+  return current || '';
+}
+
+function setItemFieldValue(item, fieldKey, value) {
+  var parts = fieldKey.split('.');
+  var current = item;
+  for (var i = 0; i < parts.length - 1; i++) {
+    if (current[parts[i]] == null) current[parts[i]] = {};
+    current = current[parts[i]];
+  }
+  current[parts[parts.length - 1]] = value;
+}
+
+function toggleListItem(idx) {
+  var body = document.getElementById('list-body-' + idx);
+  var toggleIcon = document.getElementById('toggle-icon-' + idx);
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    toggleIcon.classList.remove('open');
+  } else {
+    body.classList.add('open');
+    toggleIcon.classList.add('open');
+  }
+}
+
+function onCardListFieldChange(el) {
+  var section = el.getAttribute('data-list-section');
+  var idx = parseInt(el.getAttribute('data-list-idx'));
+  var field = el.getAttribute('data-list-field');
+  var val = el.value;
+
+  var sectionData = getNestedValue(siteData, section);
+  if (sectionData && sectionData.items && sectionData.items[idx]) {
+    setItemFieldValue(sectionData.items[idx], field, val);
+    markDirty();
+
+    // Update char count
+    if (el.tagName === 'TEXTAREA' && el.maxLength > 0) {
+      var counter = el.parentElement.querySelector('.field-char-count');
+      if (counter) counter.textContent = val.length + ' / ' + el.maxLength;
+    }
+
+    // Update collapsed name display
+    var cfg = getSectionConfig(section);
+    if (cfg) {
+      var nameField = 'name';
+      for (var k = 0; k < cfg.fields.length; k++) {
+        if (cfg.fields[k].key === 'name' || cfg.fields[k].key === 'title') { nameField = cfg.fields[k].key; break; }
+      }
+      if (field === nameField) {
+        var nameEl = document.querySelector('#list-item-' + idx + ' .list-item-name');
+        if (nameEl) nameEl.textContent = val || '(Untitled)';
+      }
+    }
+  }
+}
+
+function addCardListItem(sectionKey) {
+  var sectionData = getNestedValue(siteData, sectionKey);
+  if (!sectionData) {
+    setNestedValue(siteData, sectionKey, {});
+    sectionData = getNestedValue(siteData, sectionKey);
+  }
+  if (!sectionData.items) sectionData.items = [];
+
+  var cfg = getSectionConfig(sectionKey);
+  var newItem = {};
+  if (cfg) {
+    for (var i = 0; i < cfg.fields.length; i++) {
+      var fd = cfg.fields[i];
+      if (fd.key.indexOf('.') !== -1) {
+        setItemFieldValue(newItem, fd.key, '');
+      } else {
+        newItem[fd.key] = '';
+      }
+    }
+  }
+
+  sectionData.items.push(newItem);
+  markDirty();
+  renderSection(sectionKey);
+
+  // Auto-expand the new item
+  var newIdx = sectionData.items.length - 1;
+  setTimeout(function() {
+    toggleListItem(newIdx);
+    var el = document.getElementById('list-item-' + newIdx);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
+}
+
+function deleteCardListItem(sectionKey, idx) {
+  showModal('Delete Item', 'Are you sure you want to delete this item? This cannot be undone.', function() {
+    var sectionData = getNestedValue(siteData, sectionKey);
+    if (sectionData && sectionData.items) {
+      sectionData.items.splice(idx, 1);
+      markDirty();
+      renderSection(sectionKey);
+    }
+  }, 'btn-red');
+}
+
+function moveCardListItem(sectionKey, idx, direction) {
+  var sectionData = getNestedValue(siteData, sectionKey);
+  if (!sectionData || !sectionData.items) return;
+  var items = sectionData.items;
+  var newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= items.length) return;
+
+  var temp = items[idx];
+  items[idx] = items[newIdx];
+  items[newIdx] = temp;
+  markDirty();
+  renderSection(sectionKey);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   IMAGE UPLOAD (for card_list / rich_text fields)
+   ══════════════════════════════════════════════════════════════════ */
+var pendingImageUpload = null;
+
+function triggerImageUpload(sectionKey, itemIdx, fieldKey) {
+  pendingImageUpload = { sectionKey: sectionKey, itemIdx: itemIdx, fieldKey: fieldKey };
+  var inp = document.getElementById('globalFileInput');
+  inp.value = '';
+  inp.click();
+}
+
+document.getElementById('globalFileInput').addEventListener('change', function() {
+  if (!pendingImageUpload || !this.files || !this.files[0]) return;
+  var file = this.files[0];
+  var info = pendingImageUpload;
+  pendingImageUpload = null;
+
+  // Show spinner on the preview
+  var previewId = 'img-preview-' + info.sectionKey.replace(/\./g, '-') + '-' + info.itemIdx + '-' + info.fieldKey;
+  var previewEl = document.getElementById(previewId);
+  if (previewEl) {
+    previewEl.innerHTML = '<div class="img-upload-spinner"><div class="spinner"></div></div>';
+  }
+
+  if (!GitHub.token()) {
+    // No GitHub token — use local data URL for preview
+    resizeImage(file, 1200, 0.85, function(dataUrl) {
+      setImageValue(info.sectionKey, info.itemIdx, info.fieldKey, dataUrl);
+      markDirty();
+      renderSection(info.sectionKey);
+      showToast('Image added (local preview only)', 'success');
+    });
+    return;
+  }
+
+  GitHub.uploadImage(file, function(err, path) {
+    if (err) {
+      showToast('Image upload failed: ' + err.message, 'error');
+      renderSection(info.sectionKey);
+      return;
+    }
+    setImageValue(info.sectionKey, info.itemIdx, info.fieldKey, path);
+    markDirty();
+    renderSection(info.sectionKey);
+    showToast('Image uploaded', 'success');
+  });
+});
+
+function setImageValue(sectionKey, itemIdx, fieldKey, value) {
+  if (itemIdx === -1) {
+    // Rich text section image (not inside items array)
+    var sectionData = getNestedValue(siteData, sectionKey);
+    if (sectionData) sectionData[fieldKey] = value;
+  } else {
+    var sectionData2 = getNestedValue(siteData, sectionKey);
+    if (sectionData2 && sectionData2.items && sectionData2.items[itemIdx]) {
+      setItemFieldValue(sectionData2.items[itemIdx], fieldKey, value);
+    }
+  }
+}
+
+function removeImage(sectionKey, itemIdx, fieldKey) {
+  setImageValue(sectionKey, itemIdx, fieldKey, '');
+  markDirty();
+  renderSection(sectionKey);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RICH TEXT EDITOR
+   ══════════════════════════════════════════════════════════════════ */
+function renderRichText(container, cfg) {
+  var data = getNestedValue(siteData, cfg.key) || {};
+  var html = '';
+
+  // Standard fields (heading, image)
+  html += '<div class="card">';
+  html += '<div class="card-title">' + escHtml(cfg.label) + '</div>';
+
+  for (var i = 0; i < cfg.fields.length; i++) {
+    var f = cfg.fields[i];
+    var val = data[f.key] || '';
+    html += '<div class="field">';
+    html += '<label class="field-label">' + escHtml(f.label) + '</label>';
+
+    if (f.type === 'image') {
+      html += renderRichTextImageField(cfg.key, f.key, val);
+    } else {
+      html += '<input type="text" data-section="' + escHtml(cfg.key) + '" data-field="' + escHtml(f.key) + '" value="' + escHtml(val) + '" oninput="onFieldChange(this)">';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Paragraphs
+  var paragraphs = data.paragraphs || [];
+  html += '<div class="card" style="margin-top:20px">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  html += '<div class="card-title" style="margin-bottom:0">Paragraphs</div>';
+  html += '<button class="btn btn-surface btn-sm" onclick="addParagraph(\'' + escHtml(cfg.key) + '\')">' + icon('plus') + ' Add Paragraph</button>';
+  html += '</div>';
+  html += '<div class="paragraph-list" id="paragraphList">';
+
+  if (paragraphs.length === 0) {
+    html += '<div class="empty-state" style="padding:24px"><div class="empty-state-text">No paragraphs yet.</div></div>';
+  } else {
+    for (var j = 0; j < paragraphs.length; j++) {
+      html += '<div class="paragraph-row">';
+      html += '<textarea data-para-section="' + escHtml(cfg.key) + '" data-para-idx="' + j + '" oninput="onParagraphChange(this)" rows="3">' + escHtml(paragraphs[j]) + '</textarea>';
+      html += '<button class="paragraph-remove" onclick="removeParagraph(\'' + escHtml(cfg.key) + '\',' + j + ')" title="Remove">' + icon('x') + '</button>';
+      html += '</div>';
+    }
+  }
+
+  html += '</div>';
+  html += '</div>';
+
+  // Values list
+  var values = data.values || [];
+  html += '<div class="card" style="margin-top:20px">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  html += '<div class="card-title" style="margin-bottom:0">Values / Highlights</div>';
+  html += '<button class="btn btn-surface btn-sm" onclick="addValue(\'' + escHtml(cfg.key) + '\')">' + icon('plus') + ' Add Value</button>';
+  html += '</div>';
+  html += '<div class="values-list" id="valuesList">';
+
+  if (values.length === 0) {
+    html += '<div class="empty-state" style="padding:24px"><div class="empty-state-text">No values yet.</div></div>';
+  } else {
+    for (var v = 0; v < values.length; v++) {
+      html += '<div class="value-row">';
+      html += '<input type="text" data-value-section="' + escHtml(cfg.key) + '" data-value-idx="' + v + '" value="' + escHtml(values[v]) + '" oninput="onValueChange(this)" placeholder="e.g. Organic Ingredients">';
+      html += '<button class="paragraph-remove" onclick="removeValue(\'' + escHtml(cfg.key) + '\',' + v + ')" title="Remove">' + icon('x') + '</button>';
+      html += '</div>';
+    }
+  }
+
+  html += '</div>';
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+function renderRichTextImageField(sectionKey, fieldKey, currentValue) {
+  var previewId = 'img-preview-' + sectionKey.replace(/\./g, '-') + '--1-' + fieldKey;
+  var html = '<div class="img-preview" id="' + previewId + '">';
+  if (currentValue) {
+    html += '<img src="' + escHtml(currentValue) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">';
+    html += '<div class="img-preview-placeholder" style="display:none">' + icon('image') + '<span>Image not found</span></div>';
+    html += '<div class="img-preview-actions">';
+    html += '<button class="img-preview-btn" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',-1,\'' + escHtml(fieldKey) + '\')" title="Replace">' + icon('upload') + '</button>';
+    html += '<button class="img-preview-btn" onclick="removeRichTextImage(\'' + escHtml(sectionKey) + '\',\'' + escHtml(fieldKey) + '\')" title="Remove" style="color:var(--red)">' + icon('x') + '</button>';
+    html += '</div>';
+  } else {
+    html += '<div class="img-preview-placeholder" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',-1,\'' + escHtml(fieldKey) + '\')" style="cursor:pointer">' + icon('upload') + '<span>Click to upload</span></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function removeRichTextImage(sectionKey, fieldKey) {
+  var data = getNestedValue(siteData, sectionKey);
+  if (data) {
+    data[fieldKey] = '';
+    markDirty();
+    renderSection(sectionKey);
+  }
+}
+
+function onParagraphChange(el) {
+  var section = el.getAttribute('data-para-section');
+  var idx = parseInt(el.getAttribute('data-para-idx'));
+  var data = getNestedValue(siteData, section);
+  if (data && data.paragraphs) {
+    data.paragraphs[idx] = el.value;
+    markDirty();
+  }
+}
+
+function addParagraph(sectionKey) {
+  var data = getNestedValue(siteData, sectionKey);
+  if (!data) {
+    setNestedValue(siteData, sectionKey, {});
+    data = getNestedValue(siteData, sectionKey);
+  }
+  if (!data.paragraphs) data.paragraphs = [];
+  data.paragraphs.push('');
+  markDirty();
+  renderSection(sectionKey);
+}
+
+function removeParagraph(sectionKey, idx) {
+  var data = getNestedValue(siteData, sectionKey);
+  if (data && data.paragraphs) {
+    data.paragraphs.splice(idx, 1);
+    markDirty();
+    renderSection(sectionKey);
+  }
+}
+
+function onValueChange(el) {
+  var section = el.getAttribute('data-value-section');
+  var idx = parseInt(el.getAttribute('data-value-idx'));
+  var data = getNestedValue(siteData, section);
+  if (data && data.values) {
+    data.values[idx] = el.value;
+    markDirty();
+  }
+}
+
+function addValue(sectionKey) {
+  var data = getNestedValue(siteData, sectionKey);
+  if (!data) {
+    setNestedValue(siteData, sectionKey, {});
+    data = getNestedValue(siteData, sectionKey);
+  }
+  if (!data.values) data.values = [];
+  data.values.push('');
+  markDirty();
+  renderSection(sectionKey);
+}
+
+function removeValue(sectionKey, idx) {
+  var data = getNestedValue(siteData, sectionKey);
+  if (data && data.values) {
+    data.values.splice(idx, 1);
+    markDirty();
+    renderSection(sectionKey);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PUBLISH
+   ══════════════════════════════════════════════════════════════════ */
+function publishChanges() {
+  if (!GitHub.token()) {
+    showToast('Connect to GitHub before publishing.', 'error');
+    return;
+  }
+
+  showModal('Publish Changes', 'Push all changes to the live site? The update should appear within a minute.', function() {
+    doPublish();
+  });
+}
+
+function doPublish() {
+  // Update meta
+  if (!siteData._meta) siteData._meta = {};
+  siteData._meta.lastEdited = new Date().toISOString();
+  siteData._meta.editedBy = 'cms';
+
+  var content = JSON.stringify(siteData, null, 2);
+
+  GitHub.putFile(CMS_CONFIG.github.dataFile, content, dataSHA, 'Update site content via CMS').then(function(result) {
+    dataSHA = result.content.sha;
+    originalDataJSON = JSON.stringify(siteData);
+    isDirty = false;
+    updatePublishButton();
+    showToast('Changes published! Live in ~1 minute.', 'success');
+  }).catch(function(err) {
+    showToast('Publish failed: ' + err.message, 'error');
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODAL
+   ══════════════════════════════════════════════════════════════════ */
+function showModal(title, msg, onConfirm, btnClass) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMsg').textContent = msg;
+  var confirmBtn = document.getElementById('modalConfirmBtn');
+  confirmBtn.className = 'btn ' + (btnClass || 'btn-accent');
+  modalCallback = onConfirm;
+  document.getElementById('modalOverlay').classList.add('visible');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('visible');
+  modalCallback = null;
+}
+
+function modalConfirmAction() {
+  var cb = modalCallback;
+  closeModal();
+  if (cb) cb();
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════════════════════════════════ */
+function showToast(msg, type) {
+  var container = document.getElementById('toastContainer');
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + (type || 'success');
+
+  var svgIcon = type === 'error' ? icon('alertCircle') : icon('check');
+  toast.innerHTML = svgIcon + '<span>' + escHtml(msg) + '</span>';
+  container.appendChild(toast);
+
+  setTimeout(function() {
+    toast.classList.add('fade-out');
+    setTimeout(function() {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 300);
+  }, 3500);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════════════════ */
+function initApp() {
+  checkToken();
+}
+
+function boot() {
+  if (typeof CMS_CONFIG === 'undefined') {
+    document.getElementById('contentArea').innerHTML = '<div class="empty-state">' + icon('alertCircle') + '<div class="empty-state-title">Configuration not found</div><div class="empty-state-text">config.js could not be loaded. Make sure it exists in the admin directory.</div></div>';
+    return;
+  }
+
+  applyTheme();
+
+  // Check if already authenticated this session
+  if (sessionStorage.getItem('webnari_cms_auth') === 'true') {
+    document.getElementById('gateOverlay').classList.add('hidden');
+    initApp();
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
