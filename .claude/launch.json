@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "jadesspice",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "/tmp/jadesspice", "-l", "3847", "--no-clipboard"],
+      "port": 3847
+    }
+  ]
+}

@@ -9,6 +9,9 @@ window.CMS_CONFIG = {
   accentColor: "#D94040",
   accentGradient: "linear-gradient(135deg, #D94040, #F0A830)",
 
+  /* ── CMS API (Cloudflare Worker proxy) ──────── */
+  apiUrl: "https://webnari-cms.luissballen.workers.dev",
+
   /* ── GitHub Target ────────────────────────────── */
   github: {
     owner: "coding1017",

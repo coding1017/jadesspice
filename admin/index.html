@@ -502,27 +502,6 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   </div>
 </div>
 
-<!-- ================================================================
-     TOKEN MODAL
-     ================================================================ -->
-<div class="token-overlay hidden" id="tokenOverlay">
-  <div class="token-box">
-    <div class="token-title">Connect to GitHub</div>
-    <div class="token-desc">
-      Enter a GitHub Personal Access Token with repo access. This is needed to read and update site content. Your token is stored locally in this browser only.
-    </div>
-    <div class="field">
-      <label class="field-label">Personal Access Token</label>
-      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-    </div>
-    <div class="token-error" id="tokenError">Could not connect. Check your token and try again.</div>
-    <div class="token-actions">
-      <button class="btn btn-surface" onclick="skipToken()">Skip for Now</button>
-      <button class="btn btn-accent" onclick="submitToken()">Connect</button>
-    </div>
-  </div>
-</div>
-
 <!-- Sidebar overlay (mobile) -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -734,47 +713,36 @@ document.getElementById('gatePassword').addEventListener('keydown', function(e) 
 /* ══════════════════════════════════════════════════════════════════
    GITHUB API MODULE
    ══════════════════════════════════════════════════════════════════ */
+/* ── CMS API (proxied through Cloudflare Worker — no token needed) ── */
+var CMS_API_URL = (CMS_CONFIG && CMS_CONFIG.apiUrl) || 'https://webnari-cms.luissballen.workers.dev';
+
 var GitHub = {
-  tokenKey: function() {
-    return 'webnari_cms_token_' + CMS_CONFIG.github.repo;
+  repo: function() {
+    return CMS_CONFIG.github.owner + '/' + CMS_CONFIG.github.repo;
   },
-  token: function() {
-    return localStorage.getItem(this.tokenKey());
-  },
-  headers: function() {
-    return {
-      'Authorization': 'Bearer ' + this.token(),
-      'Accept': 'application/vnd.github.v3+json'
-    };
-  },
-  apiBase: function() {
-    return 'https://api.github.com/repos/' + CMS_CONFIG.github.owner + '/' + CMS_CONFIG.github.repo;
+  post: function(endpoint, body) {
+    body.repo = this.repo();
+    body.branch = CMS_CONFIG.github.branch;
+    return fetch(CMS_API_URL + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function(r) {
+      if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || 'API error: ' + r.status); });
+      return r.json();
+    });
   },
   getFile: function(path) {
-    return fetch(this.apiBase() + '/contents/' + path + '?ref=' + CMS_CONFIG.github.branch, {
-      headers: this.headers()
-    }).then(function(r) {
-      if (!r.ok) throw new Error('GitHub API error: ' + r.status);
-      return r.json();
-    }).then(function(data) {
-      var decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-      return { content: JSON.parse(decoded), sha: data.sha };
+    return this.post('/api/read', { path: path }).then(function(data) {
+      return { content: JSON.parse(data.content), sha: data.sha };
     });
   },
   putFile: function(path, content, sha, message) {
-    var body = {
-      message: message || 'Update via CMS',
-      content: btoa(unescape(encodeURIComponent(typeof content === 'string' ? content : JSON.stringify(content, null, 2)))),
-      branch: CMS_CONFIG.github.branch
-    };
-    if (sha) body.sha = sha;
-    return fetch(this.apiBase() + '/contents/' + path, {
-      method: 'PUT',
-      headers: Object.assign({ 'Content-Type': 'application/json' }, this.headers()),
-      body: JSON.stringify(body)
-    }).then(function(r) {
-      if (!r.ok) throw new Error('GitHub API error: ' + r.status);
-      return r.json();
+    return this.post('/api/write', {
+      path: path,
+      content: typeof content === 'string' ? content : JSON.stringify(content, null, 2),
+      sha: sha,
+      message: message || 'Update via Webnari CMS'
     });
   },
   uploadImage: function(file, callback) {
@@ -789,18 +757,10 @@ var GitHub = {
 
     resizeImage(file, 1200, 0.85, function(base64Data) {
       var rawBase64 = base64Data.split(',')[1];
-      var body = {
-        message: 'Upload image: ' + filename,
+      GitHub.post('/api/upload', {
+        path: remotePath,
         content: rawBase64,
-        branch: CMS_CONFIG.github.branch
-      };
-      fetch(GitHub.apiBase() + '/contents/' + remotePath, {
-        method: 'PUT',
-        headers: Object.assign({ 'Content-Type': 'application/json' }, GitHub.headers()),
-        body: JSON.stringify(body)
-      }).then(function(r) {
-        if (!r.ok) throw new Error('Upload failed: ' + r.status);
-        return r.json();
+        message: 'Upload image: ' + filename
       }).then(function() {
         if (callback) callback(null, localPath);
       }).catch(function(err) {
@@ -809,8 +769,8 @@ var GitHub = {
     });
   },
   testConnection: function() {
-    return fetch(this.apiBase(), { headers: this.headers() })
-      .then(function(r) { return r.ok; })
+    return this.post('/api/read', { path: CMS_CONFIG.github.dataFile })
+      .then(function() { return true; })
       .catch(function() { return false; });
   }
 };
@@ -842,54 +802,9 @@ function resizeImage(file, maxWidth, quality, callback) {
    TOKEN SETUP
    ══════════════════════════════════════════════════════════════════ */
 function checkToken() {
-  if (GitHub.token()) {
-    GitHub.testConnection().then(function(ok) {
-      if (ok) {
-        setConnectedStatus(true);
-        loadSiteData();
-      } else {
-        localStorage.removeItem(GitHub.tokenKey());
-        showTokenModal();
-      }
-    });
-  } else {
-    showTokenModal();
-  }
-}
-
-function showTokenModal() {
-  document.getElementById('tokenOverlay').classList.remove('hidden');
-}
-
-function submitToken() {
-  var tok = document.getElementById('tokenInput').value.trim();
-  if (!tok) return;
-
-  localStorage.setItem(GitHub.tokenKey(), tok);
-  GitHub.testConnection().then(function(ok) {
-    if (ok) {
-      document.getElementById('tokenOverlay').classList.add('hidden');
-      document.getElementById('tokenError').style.display = 'none';
-      setConnectedStatus(true);
-      loadSiteData();
-    } else {
-      localStorage.removeItem(GitHub.tokenKey());
-      document.getElementById('tokenError').style.display = 'block';
-    }
-  });
-}
-
-function skipToken() {
-  document.getElementById('tokenOverlay').classList.add('hidden');
-  setConnectedStatus(false);
-  showToast('Running without GitHub. Changes cannot be published.', 'error');
-  // Load with empty data
-  siteData = { _meta: { version: 1, lastEdited: new Date().toISOString(), editedBy: 'local' } };
-  originalDataJSON = JSON.stringify(siteData);
-  buildSidebar();
-  if (CMS_CONFIG.sections.length > 0) {
-    navigateToSection(CMS_CONFIG.sections[0].key);
-  }
+  // No token needed — Worker proxy handles auth
+  setConnectedStatus(true);
+  loadSiteData();
 }
 
 function setConnectedStatus(connected) {
