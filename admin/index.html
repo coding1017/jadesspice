@@ -14,16 +14,16 @@
    TOKENS
    ================================================================ */
 :root {
-  --black: #08060E;
-  --dark: #0E0B18;
-  --surface: #141024;
-  --surface2: #1A1530;
-  --border: #2A2244;
+  --black: #131118;
+  --dark: #1B1825;
+  --surface: #232030;
+  --surface2: #2C2840;
+  --border: #3D3658;
   --accent: #A855F7;
   --accent2: #C084FC;
-  --white: #F8F0FF;
-  --muted: #7A6A94;
-  --text: #B8A8D4;
+  --white: #F5F0FF;
+  --muted: #9B8EAF;
+  --text: #D0C6E0;
   --red: #EF4444;
   --red2: #7F1D1D;
   --green: #22C55E;
@@ -60,7 +60,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
    PASSWORD GATE
    ================================================================ */
 .gate-overlay {
-  position: fixed; inset: 0; background: var(--black); z-index: 2000;
+  position: fixed; inset: 0; background: linear-gradient(135deg, #131118 0%, #1a1525 50%, #131118 100%); z-index: 2000;
   display: flex; align-items: center; justify-content: center; flex-direction: column;
 }
 .gate-overlay.hidden { display: none; }
@@ -88,11 +88,12 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 .gate-input-wrap button:hover { background: rgba(255,255,255,0.06); }
 .gate-input-wrap button svg { width: 16px; height: 16px; color: var(--muted); }
 .gate-btn {
-  width: 100%; padding: 12px; border-radius: var(--radius-sm); font-weight: 700;
-  font-size: 15px; color: var(--black); transition: opacity var(--transition);
-  font-family: var(--font-head); letter-spacing: 0.04em;
+  width: 100%; padding: 14px; border-radius: var(--radius-sm); font-weight: 700;
+  font-size: 15px; color: #fff; transition: all var(--transition);
+  font-family: var(--font-head); letter-spacing: 0.06em; text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(168,85,247,0.3);
 }
-.gate-btn:hover { opacity: 0.9; }
+.gate-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(168,85,247,0.4); }
 .gate-error {
   color: var(--red); font-size: 13px; margin-top: 12px; opacity: 0;
   transition: opacity var(--transition);
@@ -158,8 +159,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   color: var(--muted); transition: all var(--transition);
   border-left: 3px solid transparent; cursor: pointer;
 }
-.sidebar-nav-item:hover { color: var(--white); background: rgba(255,255,255,0.03); }
-.sidebar-nav-item.active { color: var(--white); border-left-color: var(--accent); background: rgba(168,85,247,0.06); }
+.sidebar-nav-item:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+.sidebar-nav-item.active { color: var(--white); border-left-color: var(--accent); background: rgba(168,85,247,0.1); }
+.sidebar-nav-item.active svg { color: var(--accent); }
 .sidebar-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
 .sidebar-nav-item.active svg { opacity: 1; }
 .sidebar-divider { height: 1px; background: var(--border); margin: 8px 20px; }
@@ -238,7 +240,8 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field + .field { margin-top: 14px; }
-.field-label { font-weight: 600; font-size: 13px; color: var(--muted); }
+.field-label { font-weight: 600; font-size: 13px; color: var(--text); letter-spacing: 0.02em; }
+.field-help { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
 .field-hint { font-size: 12px; color: var(--muted); opacity: 0.7; }
 .field-char-count { font-size: 12px; color: var(--muted); text-align: right; }
 
@@ -260,7 +263,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   display: flex; align-items: center; gap: 12px; padding: 14px 16px;
   cursor: pointer; transition: background var(--transition);
 }
-.list-item-header:hover { background: rgba(255,255,255,0.02); }
+.list-item-header:hover { background: rgba(255,255,255,0.04); }
 .list-item-thumb {
   width: 40px; height: 40px; border-radius: 6px; overflow: hidden;
   background: var(--surface2); flex-shrink: 0;
@@ -300,6 +303,20 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 /* ================================================================
    IMAGE PREVIEW
    ================================================================ */
+.img-dropzone {
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 24px; text-align: center; cursor: pointer;
+  transition: all var(--transition); background: rgba(168,85,247,0.03);
+  margin-bottom: 8px;
+}
+.img-dropzone:hover, .img-dropzone.dragover {
+  border-color: var(--accent); background: rgba(168,85,247,0.08);
+}
+.img-dropzone-icon { margin-bottom: 8px; }
+.img-dropzone-icon svg { width: 32px; height: 32px; color: var(--accent); opacity: 0.6; }
+.img-dropzone-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.img-dropzone-text strong { color: var(--accent); }
+.img-dropzone-hint { font-size: 11px; color: var(--muted); opacity: 0.6; margin-top: 4px; }
 .img-preview {
   position: relative; width: 100%; height: 140px; border-radius: var(--radius-sm);
   overflow: hidden; background: var(--surface2); margin-bottom: 8px;
@@ -317,7 +334,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   opacity: 0; transition: opacity var(--transition);
 }
 .img-preview:hover .img-preview-actions { opacity: 1; }
-.img-preview-btn {
+.img-preview-btn-label { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.img-preview-actions { gap: 8px; }
+.img-preview-btn { gap: 4px;
   width: 36px; height: 36px; border-radius: 50%; background: var(--surface);
   display: flex; align-items: center; justify-content: center;
   border: 1px solid var(--border); cursor: pointer; transition: all var(--transition);
@@ -381,8 +400,10 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 .publish-btn {
   position: fixed; bottom: 24px; right: 24px; z-index: 200;
   padding: 14px 28px; border-radius: var(--radius); font-weight: 700;
-  font-size: 15px; color: var(--white); font-family: var(--font-head);
-  letter-spacing: 0.04em; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  font-size: 15px; color: #fff; font-family: var(--font-head);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  box-shadow: 0 8px 32px rgba(34,197,94,0.35);
+  background: linear-gradient(135deg, #22C55E, #16A34A);
   transform: translateY(80px); transition: transform 0.3s ease, opacity 0.3s ease;
   opacity: 0; pointer-events: none;
   display: flex; align-items: center; gap: 10px;
@@ -1239,11 +1260,15 @@ function renderImageField(sectionKey, itemIdx, fieldKey, currentValue) {
     html += '<img src="' + escHtml(currentValue) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">';
     html += '<div class="img-preview-placeholder" style="display:none">' + icon('image') + '<span>Image not found</span></div>';
     html += '<div class="img-preview-actions">';
-    html += '<button class="img-preview-btn" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" title="Replace">' + icon('upload') + '</button>';
-    html += '<button class="img-preview-btn" onclick="removeImage(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" title="Remove" style="color:var(--red)">' + icon('x') + '</button>';
+    html += '<button class="img-preview-btn" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" title="Change Photo">' + icon('upload') + '<span class="img-preview-btn-label">Change</span></button>';
+    html += '<button class="img-preview-btn" onclick="removeImage(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" title="Remove Photo" style="color:var(--red)">' + icon('x') + '<span class="img-preview-btn-label">Remove</span></button>';
     html += '</div>';
   } else {
-    html += '<div class="img-preview-placeholder" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')" style="cursor:pointer">' + icon('upload') + '<span>Click to upload</span></div>';
+    html += '<div class="img-dropzone" onclick="triggerImageUpload(\'' + escHtml(sectionKey) + '\',' + itemIdx + ',\'' + escHtml(fieldKey) + '\')">';
+    html += '<div class="img-dropzone-icon">' + icon('upload') + '</div>';
+    html += '<div class="img-dropzone-text"><strong>Click to upload</strong> a photo</div>';
+    html += '<div class="img-dropzone-hint">JPG, PNG up to 5MB</div>';
+    html += '</div>';
   }
   html += '</div>';
   return html;
@@ -1706,7 +1731,13 @@ function boot() {
   }
 }
 
-boot();
+// Apply theme immediately, then boot when DOM is ready
+try { applyTheme(); } catch(e) {}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
 </script>
 </body>
 </html>
