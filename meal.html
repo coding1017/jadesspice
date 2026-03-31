@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading... — Jade's Spice</title>
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─── */
+:root {
+  --black:   #0C0806;
+  --dark:    #14100C;
+  --surface: #1C1612;
+  --surface2:#261E18;
+  --border:  #342A22;
+  --red:     #D94040;
+  --red2:    #E86565;
+  --gold:    #F0A830;
+  --gold2:   #F5C563;
+  --green:   #3DAA6D;
+  --green2:  #5BC88A;
+  --white:   #FFF8F0;
+  --muted:   #8A7A6E;
+  --text:    #D4C4B4;
+  --font-head: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+  --radius:  4px;
+  --radius-lg: 8px;
+  --gradient: linear-gradient(135deg, #D94040, #F0A830);
+}
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--black); color: var(--text); overflow-x: hidden; line-height: 1.6; }
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; opacity:0.4; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 96px 0; }
+.eyebrow { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+.btn { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-head); font-weight:700; font-size:15px; letter-spacing:0.05em; text-transform:uppercase; padding:14px 28px; border-radius:var(--radius); cursor:pointer; border:none; transition:all 0.2s ease; }
+.btn-primary { background: var(--red); color: var(--white); }
+.btn-primary:hover { background: var(--red2); transform: translateY(-1px); }
+.btn-outline { background:transparent; color:var(--white); border:1.5px solid var(--border); }
+.btn-outline:hover { border-color:var(--red); color:var(--red); }
+/* ─── NAV ─── */
+nav { position:sticky; top:0; z-index:100; background:rgba(12,8,6,0.92); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); padding:0 24px; }
+.nav-inner { display:flex; align-items:center; justify-content:space-between; height:72px; max-width:1120px; margin:0 auto; }
+.logo { font-family:var(--font-head); font-weight:900; font-size:22px; color:var(--white); letter-spacing:0.04em; line-height:1.1; }
+.logo span { color:var(--red); }
+.logo small { display:block; font-family:var(--font-body); font-size:10px; font-weight:400; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-top:1px; }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { font-family:var(--font-head); font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text); transition:color 0.2s; }
+.nav-links a:hover { color:var(--white); }
+.nav-cta { display:flex; align-items:center; gap:16px; }
+.ig-link { font-family:var(--font-head); font-size:13px; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+.ig-link:hover { color:var(--red); }
+.hamburger { display:none; background:none; border:none; cursor:pointer; width:28px; height:20px; position:relative; }
+.hamburger span { display:block; width:100%; height:2px; background:var(--white); position:absolute; left:0; transition:all 0.3s; }
+.hamburger span:nth-child(1) { top:0; } .hamburger span:nth-child(2) { top:9px; } .hamburger span:nth-child(3) { top:18px; }
+.hamburger.open span:nth-child(1) { top:9px; transform:rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity:0; }
+.hamburger.open span:nth-child(3) { top:9px; transform:rotate(-45deg); }
+/* ─── MOBILE MENU ─── */
+.mobile-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:98; }
+.mobile-overlay.open { display:block; }
+.mobile-menu { position:fixed; top:0; right:-300px; width:300px; height:100%; background:var(--dark); z-index:99; transition:right 0.3s; padding:80px 24px 24px; overflow-y:auto; }
+.mobile-menu.open { right:0; }
+.mobile-menu a { display:block; font-family:var(--font-head); font-size:16px; font-weight:700; text-transform:uppercase; color:var(--text); padding:12px 0; border-bottom:1px solid var(--border); }
+.mobile-menu a:hover { color:var(--white); }
+.mobile-menu-cta { margin-top:24px; }
+.mobile-menu-cta .btn { width:100%; justify-content:center; }
+
+/* ─── MEAL HERO ─── */
+.meal-hero { position:relative; width:100%; height:480px; overflow:hidden; }
+.meal-hero img { width:100%; height:100%; object-fit:cover; }
+.meal-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, var(--black) 0%, transparent 60%); }
+.meal-hero-badges { position:absolute; top:24px; left:24px; display:flex; gap:8px; }
+.meal-hero-badge { font-family:var(--font-head); font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:var(--radius); }
+.badge-cuisine { background:var(--red); color:var(--white); }
+.badge-spice { background:var(--gold); color:var(--black); }
+.meal-back { position:absolute; top:24px; right:24px; display:flex; align-items:center; gap:6px; font-family:var(--font-head); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--white); background:rgba(12,8,6,0.6); backdrop-filter:blur(8px); padding:8px 16px; border-radius:var(--radius); transition:all 0.2s; }
+.meal-back:hover { background:rgba(12,8,6,0.85); }
+
+/* ─── MEAL INFO ─── */
+.meal-info { padding:48px 0 0; }
+.meal-info-grid { display:flex; justify-content:space-between; align-items:flex-start; gap:32px; }
+.meal-info-text { flex:1; }
+.meal-info-text h1 { font-family:var(--font-head); font-weight:900; font-size:clamp(36px,5vw,56px); color:var(--white); text-transform:uppercase; line-height:1.05; margin-bottom:16px; }
+.meal-info-text p { font-size:17px; color:var(--text); line-height:1.7; max-width:600px; }
+.meal-info-meta { display:flex; gap:24px; margin-top:20px; flex-wrap:wrap; }
+.meal-meta-item { font-family:var(--font-head); font-size:14px; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:6px; }
+.meal-meta-item svg { color:var(--gold); }
+.meal-info-cta { display:flex; flex-direction:column; align-items:flex-end; gap:12px; flex-shrink:0; }
+.meal-price { font-family:var(--font-head); font-weight:900; font-size:36px; color:var(--gold); }
+
+/* ─── MACROS GRID ─── */
+.meal-macros-section { padding:48px 0; }
+.macros-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px; }
+.macro-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 16px; text-align:center; }
+.macro-card-val { font-family:var(--font-head); font-weight:900; font-size:28px; color:var(--gold); }
+.macro-card-label { font-family:var(--font-head); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-top:4px; }
+
+/* ─── DETAIL SECTIONS ─── */
+.detail-section { padding:48px 0; border-top:1px solid var(--border); }
+.detail-section h2 { font-family:var(--font-head); font-weight:900; font-size:28px; color:var(--white); text-transform:uppercase; margin-bottom:20px; }
+.detail-section p, .detail-section li { font-size:16px; color:var(--text); line-height:1.7; }
+
+/* Ingredients pills */
+.ingredients-list { display:flex; flex-wrap:wrap; gap:8px; }
+.ingredient-pill { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:8px 18px; font-family:var(--font-head); font-size:13px; font-weight:600; color:var(--white); letter-spacing:0.02em; }
+
+/* Allergens callout */
+.allergen-callout { background:rgba(217,64,64,0.08); border:1px solid rgba(217,64,64,0.25); border-radius:var(--radius-lg); padding:20px 24px; display:flex; align-items:flex-start; gap:12px; }
+.allergen-callout svg { flex-shrink:0; margin-top:2px; }
+.allergen-callout p { color:var(--text); font-size:15px; }
+.allergen-callout strong { color:var(--red2); }
+
+/* Cooking steps */
+.cooking-steps { counter-reset:step; }
+.cooking-step { counter-increment:step; padding:16px 0 16px 48px; position:relative; border-bottom:1px solid var(--border); }
+.cooking-step:last-child { border-bottom:none; }
+.cooking-step::before { content:counter(step); position:absolute; left:0; top:16px; width:32px; height:32px; border-radius:50%; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-weight:800; font-size:14px; color:var(--gold); }
+
+/* Storage grid */
+.storage-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.storage-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; }
+.storage-card h3 { font-family:var(--font-head); font-weight:800; font-size:16px; color:var(--white); text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.storage-card p { color:var(--text); font-size:15px; line-height:1.6; }
+
+/* ─── CTA BANNER ─── */
+.meal-cta-banner { padding:80px 0; text-align:center; }
+.meal-cta-banner h2 { font-family:var(--font-head); font-weight:900; font-size:clamp(28px,4vw,42px); color:var(--white); text-transform:uppercase; margin-bottom:12px; }
+.meal-cta-banner p { color:var(--muted); font-size:16px; margin-bottom:28px; }
+
+/* ─── FOOTER ─── */
+footer { background:var(--dark); border-top:1px solid var(--border); padding:64px 0 24px; }
+.footer-grid { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:48px; }
+.footer-brand .logo { font-size:20px; margin-bottom:12px; display:inline-block; }
+.footer-brand p { font-size:14px; color:var(--muted); margin-top:12px; line-height:1.6; }
+.footer-social { display:flex; gap:10px; margin-top:16px; }
+.footer-social a { width:36px; height:36px; border-radius:50%; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.footer-social a:hover { border-color:var(--red); }
+.footer-col h4 { font-family:var(--font-head); font-weight:800; font-size:14px; text-transform:uppercase; letter-spacing:0.08em; color:var(--white); margin-bottom:16px; }
+.footer-col a { display:block; font-size:14px; color:var(--muted); padding:4px 0; transition:color 0.2s; }
+.footer-col a:hover { color:var(--white); }
+.footer-contact-item { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); padding:4px 0; }
+.footer-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:48px; padding-top:24px; border-top:1px solid var(--border); font-size:13px; color:var(--muted); }
+/* Webnari badge */
+.webnari-powered { text-align:center; padding:14px 0 12px; border-top:1px solid rgba(128,128,128,0.12); background:#FDF8F0; }
+.webnari-powered-inner { font-size:16px; color:#1A1518; font-weight:600; display:flex; align-items:center; justify-content:center; gap:10px; font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
+.webnari-powered-logo { width:28px; height:28px; border-radius:8px; background:radial-gradient(circle at center,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0.15) 40%,#B8892A 70%,#D4A63A 100%); box-shadow:0 0 12px rgba(255,255,255,0.5),0 0 24px rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.webnari-powered-logo svg { width:14px; height:14px; }
+.webnari-powered-inner a { color:#B8892A; font-weight:900; text-decoration:none; }
+.webnari-powered-inner a:hover { text-decoration:underline; }
+
+/* ─── LOADING ─── */
+.meal-loading { display:flex; align-items:center; justify-content:center; min-height:60vh; font-family:var(--font-head); font-size:24px; color:var(--muted); }
+
+/* ─── REVEAL ─── */
+.reveal { opacity:0; transform:translateY(32px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-delay-1 { transition-delay:0.1s; }
+.reveal-delay-2 { transition-delay:0.2s; }
+.reveal-delay-3 { transition-delay:0.3s; }
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px) {
+  .macros-grid { grid-template-columns:repeat(4, 1fr); }
+  .storage-grid { grid-template-columns:1fr; }
+}
+@media(max-width:768px) {
+  .nav-links, .nav-cta { display:none; }
+  .hamburger { display:block; }
+  .meal-hero { height:320px; }
+  .meal-info-grid { flex-direction:column; }
+  .meal-info-cta { align-items:flex-start; }
+  .macros-grid { grid-template-columns:repeat(3, 1fr); }
+  .footer-grid { grid-template-columns:1fr 1fr; gap:32px; }
+  .footer-bottom { flex-direction:column; gap:8px; text-align:center; }
+}
+@media(max-width:480px) {
+  .macros-grid { grid-template-columns:repeat(2, 1fr); }
+  .footer-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="container nav-inner">
+    <a href="/" class="logo">JADE'S <span>SPICE</span><small>Beautiful moments on your lips</small></a>
+    <ul class="nav-links">
+      <li><a href="/#meals">Menu</a></li>
+      <li><a href="/#about">About</a></li>
+      <li><a href="/#reviews">Reviews</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/glossary/">Glossary</a></li>
+      <li><a href="/macros/">Macros</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="https://www.instagram.com/jades_spice/" target="_blank" rel="noopener" class="ig-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        @jades_spice
+      </a>
+      <a href="https://www.instagram.com/jades_spice/" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Order Now
+      </a>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/">Home</a>
+  <a href="/#meals">Menu</a>
+  <a href="/#about">About</a>
+  <a href="/#reviews">Reviews</a>
+  <a href="/blog/">Blog</a>
+  <a href="/glossary/">Glossary</a>
+  <a href="/macros/">Macros</a>
+  <div class="mobile-menu-cta">
+    <a href="https://www.instagram.com/jades_spice/" target="_blank" rel="noopener" class="btn btn-primary">Order Now</a>
+  </div>
+</div>
+
+<!-- ═══ MEAL CONTENT (injected by JS) ═══ -->
+<div id="mealContent">
+  <div class="meal-loading">Loading...</div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">JADE'S <span>SPICE</span><small>Beautiful moments on your lips</small></div>
+        <p>Asian-inspired meal prep made fresh from scratch with organic ingredients. Custom macros for your fitness goals. Glass containers only.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/jades_spice/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Menu</h4>
+        <a href="/#meals">This Week's Meals</a>
+        <a href="/#menu">Full Menu</a>
+        <a href="/#how">How It Works</a>
+        <a href="https://www.instagram.com/jades_spice/" target="_blank">Order Now</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="/#about">About Jade</a>
+        <a href="/#reviews">Reviews</a>
+        <a href="/blog/">Blog</a>
+        <a href="/glossary/">Kitchen Glossary</a>
+        <a href="/macros/">Macro Calculator</a>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <a href="https://www.instagram.com/jades_spice/" target="_blank" rel="noopener">@jades_spice</a>
+        </div>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Made with love
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Jade's Spice. All rights reserved.</span>
+      <span>Freshly made from scratch with organic ingredients</span>
+    </div>
+  </div>
+</footer>
+<div class="webnari-powered">
+  <div class="webnari-powered-inner">
+    <div class="webnari-powered-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#B8892A" fill="#FFFFFF"/><path d="M2 12l10 5 10-5" stroke="#4A7CC9"/><path d="M2 17l10 5 10-5" stroke="#B8892A"/></svg>
+    </div>
+    Built and managed by <a href="https://webnari.io" target="_blank">Webnari</a>
+  </div>
+</div>
+
+<script>
+/* ─── HAMBURGER ─── */
+(function() {
+  var hamburger = document.getElementById('hamburger');
+  var menu = document.getElementById('mobileMenu');
+  var overlay = document.getElementById('mobileOverlay');
+  function toggleMenu() {
+    hamburger.classList.toggle('open');
+    menu.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  hamburger.addEventListener('click', toggleMenu);
+  overlay.addEventListener('click', toggleMenu);
+  menu.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() { if (menu.classList.contains('open')) toggleMenu(); });
+  });
+})();
+
+/* ─── LOAD MEAL ─── */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var idx = parseInt(params.get('m'), 10);
+  if (isNaN(idx)) idx = 0;
+
+  fetch('/site-data.json?v=' + Date.now())
+    .then(function(r) { return r.ok ? r.json() : Promise.reject('fetch failed'); })
+    .then(function(data) {
+      var meals = data.sections && data.sections.featured_meals && data.sections.featured_meals.items;
+      if (!meals || !meals[idx]) { document.getElementById('mealContent').innerHTML = '<div class="meal-loading">Meal not found</div>'; return; }
+      var m = meals[idx];
+      var f = m.fields || {};
+      var ig = (data.contact && data.contact.orderLink) || 'https://www.instagram.com/jades_spice/';
+      document.title = (m.name || 'Meal') + ' — Jade\'s Spice';
+
+      var html = '';
+
+      /* Hero image */
+      html += '<div class="meal-hero">';
+      if (m.image) html += '<img src="' + m.image + '" alt="' + (m.name || '') + '">';
+      html += '<div class="meal-hero-overlay"></div>';
+      html += '<div class="meal-hero-badges">';
+      if (m.tag) html += '<span class="meal-hero-badge badge-cuisine">' + m.tag + '</span>';
+      if (m.spiceLevel) html += '<span class="meal-hero-badge badge-spice">' + m.spiceLevel + '</span>';
+      html += '</div>';
+      html += '<a href="/" class="meal-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Back to Menu</a>';
+      html += '</div>';
+
+      /* Info section */
+      html += '<div class="meal-info"><div class="container"><div class="meal-info-grid">';
+      html += '<div class="meal-info-text">';
+      html += '<h1>' + (m.name || '') + '</h1>';
+      html += '<p>' + (m.description || '') + '</p>';
+      var meta = [];
+      if (m.servingSize) meta.push('<div class="meal-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg> ' + m.servingSize + '</div>');
+      if (m.shelfLife) meta.push('<div class="meal-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ' + m.shelfLife + '</div>');
+      if (meta.length) html += '<div class="meal-info-meta">' + meta.join('') + '</div>';
+      html += '</div>';
+      html += '<div class="meal-info-cta">';
+      if (m.price) html += '<div class="meal-price">' + m.price + '</div>';
+      html += '<a href="' + ig + '" target="_blank" rel="noopener" class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> Order This Meal</a>';
+      html += '</div></div></div></div>';
+
+      /* Macros */
+      var macroList = [
+        {k:'calories', l:'Calories'}, {k:'protein', l:'Protein'}, {k:'carbs', l:'Carbs'},
+        {k:'fat', l:'Fat'}, {k:'fiber', l:'Fiber'}, {k:'sodium', l:'Sodium'}, {k:'sugar', l:'Sugar'}
+      ];
+      var macroCards = macroList.filter(function(mc) { return f[mc.k]; }).map(function(mc) {
+        return '<div class="macro-card reveal"><div class="macro-card-val">' + f[mc.k] + '</div><div class="macro-card-label">' + mc.l + '</div></div>';
+      });
+      if (macroCards.length) {
+        html += '<div class="meal-macros-section"><div class="container">';
+        html += '<div class="eyebrow">Nutrition Facts</div>';
+        html += '<div class="macros-grid">' + macroCards.join('') + '</div>';
+        html += '</div></div>';
+      }
+
+      /* Long description */
+      if (m.longDescription) {
+        html += '<div class="detail-section"><div class="container reveal">';
+        html += '<h2>About This Dish</h2>';
+        html += '<p>' + m.longDescription.replace(/\n/g, '</p><p>') + '</p>';
+        html += '</div></div>';
+      }
+
+      /* Ingredients */
+      if (m.ingredients) {
+        var pills = m.ingredients.split(',').map(function(i) { return '<span class="ingredient-pill">' + i.trim() + '</span>'; });
+        html += '<div class="detail-section"><div class="container reveal">';
+        html += '<h2>Key Ingredients</h2>';
+        html += '<div class="ingredients-list">' + pills.join('') + '</div>';
+        html += '</div></div>';
+      }
+
+      /* Allergens */
+      if (m.allergens) {
+        html += '<div class="detail-section"><div class="container reveal">';
+        html += '<h2>Allergen Info</h2>';
+        html += '<div class="allergen-callout"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+        html += '<p><strong>Contains:</strong> ' + m.allergens + '</p></div>';
+        html += '</div></div>';
+      }
+
+      /* Cooking steps */
+      if (m.cookingSteps) {
+        var steps = m.cookingSteps.split('\n').filter(function(s) { return s.trim(); });
+        html += '<div class="detail-section"><div class="container reveal">';
+        html += '<h2>How It\'s Made</h2>';
+        html += '<div class="cooking-steps">' + steps.map(function(s) { return '<div class="cooking-step"><p>' + s.trim() + '</p></div>'; }).join('') + '</div>';
+        html += '</div></div>';
+      }
+
+      /* Storage — reheating + shelf life */
+      if (m.reheatingTips || m.shelfLife) {
+        html += '<div class="detail-section"><div class="container reveal">';
+        html += '<h2>Storage & Reheating</h2>';
+        html += '<div class="storage-grid">';
+        if (m.reheatingTips) {
+          html += '<div class="storage-card"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Reheating</h3><p>' + m.reheatingTips + '</p></div>';
+        }
+        if (m.shelfLife) {
+          html += '<div class="storage-card"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 2v4M18 2v4"/></svg> Shelf Life</h3><p>' + m.shelfLife + '</p></div>';
+        }
+        html += '</div></div></div>';
+      }
+
+      /* CTA banner */
+      html += '<div class="meal-cta-banner"><div class="container reveal">';
+      html += '<h2>Want This Meal?</h2>';
+      html += '<p>DM @jades_spice on Instagram to place your order. Tell us your goals, and we\'ll build your perfect meal plan.</p>';
+      html += '<a href="' + ig + '" target="_blank" rel="noopener" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> DM Us on Instagram</a>';
+      html += '</div></div>';
+
+      document.getElementById('mealContent').innerHTML = html;
+
+      /* Scroll reveals */
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+        });
+      }, { threshold: 0.05 });
+      document.querySelectorAll('.reveal').forEach(function(el) {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) el.classList.add('visible');
+        else observer.observe(el);
+      });
+    })
+    .catch(function() {
+      document.getElementById('mealContent').innerHTML = '<div class="meal-loading">Could not load meal data</div>';
+    });
+})();
+</script>
+</body>
+</html>
