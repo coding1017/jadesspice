@@ -57,7 +57,7 @@
     var delays = ['reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
     container.innerHTML = items.map(function(item, i) {
       var f = item.fields || {};
-      return '<div class="meal-card reveal ' + delays[i % 3] + '">' +
+      return '<div class="meal-card reveal visible ' + delays[i % 3] + '">' +
         '<div class="meal-img">' +
           (item.image ? '<img src="' + item.image + '" alt="' + (item.name || '') + '" loading="lazy">' : '') +
           '<span class="meal-cuisine-tag">' + (item.tag || '') + '</span>' +
@@ -86,7 +86,7 @@
     container.innerHTML = items.map(function(item, i) {
       var stars = '';
       for (var s = 0; s < (parseInt(item.rating) || 5); s++) stars += starSvg;
-      return '<div class="testimonial-card reveal ' + delays[i % 3] + '">' +
+      return '<div class="testimonial-card reveal visible ' + delays[i % 3] + '">' +
         '<div class="testimonial-stars">' + stars + '</div>' +
         '<p class="testimonial-text">"' + (item.text || '') + '"</p>' +
         '<div class="testimonial-author">' + (item.author || '') + '</div>' +
@@ -126,7 +126,7 @@
     var playSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="var(--white)" stroke="none"><polygon points="8 5 20 12 8 19"/></svg>';
     var delays = ['reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
     container.innerHTML = items.map(function(item, i) {
-      return '<a class="kitchen-card reveal ' + delays[i % 3] + '" href="' + (item.link || '#') + '" target="_blank" rel="noopener">' +
+      return '<a class="kitchen-card reveal visible ' + delays[i % 3] + '" href="' + (item.link || '#') + '" target="_blank" rel="noopener">' +
         '<div class="kitchen-thumb">' +
           (item.image ? '<img src="' + item.image + '" alt="' + (item.title || '') + '" loading="lazy">' : '') +
           '<div class="kitchen-play"><div class="kitchen-play-btn">' + playSvg + '</div></div>' +
