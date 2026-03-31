@@ -142,6 +142,8 @@
 
   /* Re-observe any .reveal elements that were dynamically inserted */
   function reobserveReveals() {
+    var unrevealed = document.querySelectorAll('.reveal:not(.visible)');
+    if (!unrevealed.length) return;
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
@@ -149,9 +151,11 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal:not(.visible)').forEach(function(el) {
-      observer.observe(el);
+    }, { threshold: 0.05 });
+    /* Delay observe so the browser has a frame to lay out the new elements,
+       ensuring IntersectionObserver fires for elements already in view */
+    requestAnimationFrame(function() {
+      unrevealed.forEach(function(el) { observer.observe(el); });
     });
   }
 
