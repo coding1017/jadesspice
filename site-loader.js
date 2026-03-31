@@ -57,7 +57,7 @@
     var delays = ['reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
     container.innerHTML = items.map(function(item, i) {
       var f = item.fields || {};
-      return '<div class="meal-card reveal visible ' + delays[i % 3] + '">' +
+      return '<a href="/meal.html?m=' + i + '" class="meal-card reveal visible ' + delays[i % 3] + '" style="display:block;color:inherit;text-decoration:none;">' +
         '<div class="meal-img">' +
           (item.image ? '<img src="' + item.image + '" alt="' + (item.name || '') + '" loading="lazy">' : '') +
           '<span class="meal-cuisine-tag">' + (item.tag || '') + '</span>' +
@@ -72,7 +72,7 @@
             (f.fat ? '<div class="meal-macro"><span class="meal-macro-val">' + f.fat + '</span><span class="meal-macro-label">Fat</span></div>' : '') +
           '</div>' +
         '</div>' +
-      '</div>';
+      '</a>';
     }).join('');
   }
 
