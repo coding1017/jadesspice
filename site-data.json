@@ -40,44 +40,98 @@
         {
           "name": "Szechuan Spicy Chicken",
           "description": "Tender chicken breast in a fiery Szechuan sauce with stir-fried vegetables and turmeric rice.",
+          "longDescription": "",
           "image": "/images/szechuan-chicken.jpg",
           "tag": "Chinese",
-          "fields": { "protein": "55g", "calories": "445", "carbs": "33g", "fat": "12g" }
+          "servingSize": "",
+          "price": "",
+          "spiceLevel": "Spicy",
+          "fields": { "protein": "55g", "calories": "445", "carbs": "33g", "fat": "12g", "fiber": "", "sodium": "", "sugar": "" },
+          "ingredients": "",
+          "allergens": "",
+          "cookingSteps": "",
+          "reheatingTips": "",
+          "shelfLife": ""
         },
         {
           "name": "Hong Shao Rou",
           "description": "Traditional red braised pork belly, slow-cooked to perfection with star anise, ginger, and soy.",
+          "longDescription": "",
           "image": "/images/braised-meat.jpg",
           "tag": "Chinese",
-          "fields": { "protein": "48g", "calories": "520", "carbs": "28g", "fat": "22g" }
+          "servingSize": "",
+          "price": "",
+          "spiceLevel": "Mild",
+          "fields": { "protein": "48g", "calories": "520", "carbs": "28g", "fat": "22g", "fiber": "", "sodium": "", "sugar": "" },
+          "ingredients": "",
+          "allergens": "",
+          "cookingSteps": "",
+          "reheatingTips": "",
+          "shelfLife": ""
         },
         {
           "name": "Teriyaki Chicken Bowl",
           "description": "Lean chicken breast with house teriyaki glaze, garlic asparagus, and fluffy jasmine rice.",
+          "longDescription": "",
           "image": "/images/chicken-sweetpotato.jpg",
           "tag": "Fusion",
-          "fields": { "protein": "52g", "calories": "480", "carbs": "40g", "fat": "14g" }
+          "servingSize": "",
+          "price": "",
+          "spiceLevel": "Mild",
+          "fields": { "protein": "52g", "calories": "480", "carbs": "40g", "fat": "14g", "fiber": "", "sodium": "", "sugar": "" },
+          "ingredients": "",
+          "allergens": "",
+          "cookingSteps": "",
+          "reheatingTips": "",
+          "shelfLife": ""
         },
         {
           "name": "Mapo Tofu Power Bowl",
           "description": "Spicy Sichuan-style tofu with 93% lean ground beef, chili oil, and steamed vegetables.",
+          "longDescription": "",
           "image": "/images/beef-stew.jpg",
           "tag": "Chinese",
-          "fields": { "protein": "42g", "calories": "410", "carbs": "25g", "fat": "18g" }
+          "servingSize": "",
+          "price": "",
+          "spiceLevel": "Spicy",
+          "fields": { "protein": "42g", "calories": "410", "carbs": "25g", "fat": "18g", "fiber": "", "sodium": "", "sugar": "" },
+          "ingredients": "",
+          "allergens": "",
+          "cookingSteps": "",
+          "reheatingTips": "",
+          "shelfLife": ""
         },
         {
           "name": "Chili Oil Dumplings",
           "description": "Handmade dumplings in house chili oil with fresh ginger, scallions, and crispy garlic.",
+          "longDescription": "",
           "image": "/images/dumplings.jpg",
           "tag": "Fusion",
-          "fields": { "protein": "38g", "calories": "390", "carbs": "35g", "fat": "15g" }
+          "servingSize": "",
+          "price": "",
+          "spiceLevel": "Medium",
+          "fields": { "protein": "38g", "calories": "390", "carbs": "35g", "fat": "15g", "fiber": "", "sodium": "", "sugar": "" },
+          "ingredients": "",
+          "allergens": "",
+          "cookingSteps": "",
+          "reheatingTips": "",
+          "shelfLife": ""
         },
         {
           "name": "Wild Salmon & Greens",
           "description": "Wild-caught Alaska sockeye salmon with organic broccoli, squash, and lemon herb sauce.",
+          "longDescription": "",
           "image": "/images/meal-prep-spread.jpg",
           "tag": "Healthy",
-          "fields": { "protein": "50g", "calories": "420", "carbs": "18g", "fat": "16g" }
+          "servingSize": "",
+          "price": "",
+          "spiceLevel": "Mild",
+          "fields": { "protein": "50g", "calories": "420", "carbs": "18g", "fat": "16g", "fiber": "", "sodium": "", "sugar": "" },
+          "ingredients": "",
+          "allergens": "",
+          "cookingSteps": "",
+          "reheatingTips": "",
+          "shelfLife": ""
         }
       ]
     },
