@@ -51,13 +51,25 @@ window.CMS_CONFIG = {
       itemLabel: "meal",
       fields: [
         { key: "name", label: "Meal Name", type: "text", required: true },
-        { key: "description", label: "Description", type: "textarea", maxLength: 200 },
+        { key: "description", label: "Short Description", type: "textarea", maxLength: 200, help: "Shows on the menu card" },
+        { key: "longDescription", label: "Full Description", type: "textarea", maxLength: 500, help: "Detailed writeup for the meal detail view" },
         { key: "image", label: "Photo", type: "image" },
         { key: "tag", label: "Cuisine Tag", type: "select", options: ["Chinese", "Fusion", "Healthy", "Comfort"] },
+        { key: "servingSize", label: "Serving Size", type: "text", placeholder: "e.g. 12 oz / 340g" },
+        { key: "price", label: "Price", type: "text", placeholder: "e.g. $14.99" },
+        { key: "spiceLevel", label: "Spice Level", type: "select", options: ["Mild", "Medium", "Spicy", "Extra Spicy"] },
         { key: "fields.protein", label: "Protein", type: "text", placeholder: "e.g. 55g", group: "macros" },
         { key: "fields.calories", label: "Calories", type: "text", placeholder: "e.g. 445", group: "macros" },
         { key: "fields.carbs", label: "Carbs", type: "text", placeholder: "e.g. 33g", group: "macros" },
-        { key: "fields.fat", label: "Fat", type: "text", placeholder: "e.g. 12g", group: "macros" }
+        { key: "fields.fat", label: "Fat", type: "text", placeholder: "e.g. 12g", group: "macros" },
+        { key: "fields.fiber", label: "Fiber", type: "text", placeholder: "e.g. 4g", group: "macros" },
+        { key: "fields.sodium", label: "Sodium", type: "text", placeholder: "e.g. 580mg", group: "macros" },
+        { key: "fields.sugar", label: "Sugar", type: "text", placeholder: "e.g. 6g", group: "macros" },
+        { key: "ingredients", label: "Key Ingredients", type: "textarea", help: "Comma-separated list of main ingredients", group: "details" },
+        { key: "allergens", label: "Allergens", type: "text", placeholder: "e.g. Soy, Sesame, Gluten", group: "details" },
+        { key: "cookingSteps", label: "How It's Made", type: "textarea", maxLength: 1000, help: "Optional step-by-step cooking process", group: "details" },
+        { key: "reheatingTips", label: "Reheating Instructions", type: "textarea", help: "e.g. Microwave 2-3 min, stovetop 5 min", group: "details" },
+        { key: "shelfLife", label: "Shelf Life", type: "text", placeholder: "e.g. 5 days refrigerated, 30 days frozen", group: "details" }
       ]
     },
     {
