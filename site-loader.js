@@ -140,10 +140,13 @@
     }).join('');
   }
 
-  /* Re-observe any .reveal elements that were dynamically inserted */
+  /* Re-observe any .reveal elements that were dynamically inserted.
+     Elements already in the viewport get visible immediately;
+     elements below the fold get observed for scroll-triggered reveal. */
   function reobserveReveals() {
     var unrevealed = document.querySelectorAll('.reveal:not(.visible)');
     if (!unrevealed.length) return;
+    var vh = window.innerHeight;
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
@@ -152,10 +155,13 @@
         }
       });
     }, { threshold: 0.05 });
-    /* Delay observe so the browser has a frame to lay out the new elements,
-       ensuring IntersectionObserver fires for elements already in view */
-    requestAnimationFrame(function() {
-      unrevealed.forEach(function(el) { observer.observe(el); });
+    unrevealed.forEach(function(el) {
+      var rect = el.getBoundingClientRect();
+      if (rect.top < vh && rect.bottom > 0) {
+        el.classList.add('visible');
+      } else {
+        observer.observe(el);
+      }
     });
   }
 
