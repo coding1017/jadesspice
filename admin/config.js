@@ -28,31 +28,6 @@ window.CMS_CONFIG = {
   /* ── Section Definitions ──────────────────────── */
   sections: [
     {
-      key: "seo",
-      label: "SEO",
-      icon: "search",
-      type: "key_value",
-      fields: [
-        { key: "title", label: "Page Title", type: "text", help: "Shows in browser tab and Google results" },
-        { key: "description", label: "Meta Description", type: "textarea", help: "Shows under title in Google results (150-160 chars)", maxLength: 160 },
-        { key: "ogTitle", label: "Social Share Title", type: "text", help: "Title when shared on Facebook/Twitter" },
-        { key: "ogDescription", label: "Social Share Description", type: "textarea", help: "Description when shared on social media" }
-      ]
-    },
-    {
-      key: "contact",
-      label: "Contact",
-      icon: "at-sign",
-      type: "key_value",
-      fields: [
-        { key: "instagram", label: "Instagram URL", type: "text" },
-        { key: "instagramHandle", label: "Instagram Handle", type: "text", help: "e.g. @jades_spice" },
-        { key: "email", label: "Email", type: "text" },
-        { key: "phone", label: "Phone", type: "text" },
-        { key: "orderLink", label: "Order Link (DM/URL)", type: "text", help: "Where the Order Now button goes" }
-      ]
-    },
-    {
       key: "hero",
       label: "Hero",
       icon: "home",
@@ -96,6 +71,19 @@ window.CMS_CONFIG = {
       ]
     },
     {
+      key: "contact",
+      label: "Contact",
+      icon: "at-sign",
+      type: "key_value",
+      fields: [
+        { key: "instagram", label: "Instagram URL", type: "text" },
+        { key: "instagramHandle", label: "Instagram Handle", type: "text", help: "e.g. @jades_spice" },
+        { key: "email", label: "Email", type: "text" },
+        { key: "phone", label: "Phone", type: "text" },
+        { key: "orderLink", label: "Order Link (DM/URL)", type: "text", help: "Where the Order Now button goes" }
+      ]
+    },
+    {
       key: "sections.testimonials",
       label: "Reviews",
       icon: "star",
@@ -122,6 +110,18 @@ window.CMS_CONFIG = {
         { key: "image", label: "Thumbnail", type: "image" },
         { key: "label", label: "Label Tag", type: "text", placeholder: "e.g. Meal Prep Day" },
         { key: "link", label: "Instagram Reel Link", type: "text" }
+      ]
+    },
+    {
+      key: "seo",
+      label: "SEO",
+      icon: "search",
+      type: "key_value",
+      fields: [
+        { key: "title", label: "Page Title", type: "text", help: "Shows in browser tab and Google results" },
+        { key: "description", label: "Meta Description", type: "textarea", help: "Shows under title in Google results (150-160 chars)", maxLength: 160 },
+        { key: "ogTitle", label: "Social Share Title", type: "text", help: "Title when shared on Facebook/Twitter" },
+        { key: "ogDescription", label: "Social Share Description", type: "textarea", help: "Description when shared on social media" }
       ]
     }
   ]
