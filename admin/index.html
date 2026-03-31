@@ -840,7 +840,7 @@ function setConnectedStatus(connected) {
   }
 }
 
-document.getElementById('tokenInput').addEventListener('keydown', function(e) {
+var _ti = document.getElementById('tokenInput'); if (_ti) _ti.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') submitToken();
 });
 
