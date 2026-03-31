@@ -10,7 +10,7 @@ window.CMS_CONFIG = {
   accentGradient: "linear-gradient(135deg, #D94040, #F0A830)",
 
   /* ── CMS API (Cloudflare Worker proxy) ──────── */
-  apiUrl: "https://webnari-cms.luissballen.workers.dev",
+  apiUrl: "https://webnari-cms.webnari.workers.dev",
 
   /* ── GitHub Target ────────────────────────────── */
   github: {
