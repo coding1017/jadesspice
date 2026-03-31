@@ -9,6 +9,9 @@ window.CMS_CONFIG = {
   accentColor: "#D94040",
   accentGradient: "linear-gradient(135deg, #D94040, #F0A830)",
 
+  /* ── Live Site URL ────────────────────────────── */
+  siteUrl: "https://jadesspice.com",
+
   /* ── CMS API (Cloudflare Worker proxy) ──────── */
   apiUrl: "https://webnari-cms.webnari.workers.dev",
 
@@ -22,8 +25,8 @@ window.CMS_CONFIG = {
   },
 
   /* ── Auth (SHA-256 of password) ────────────────── */
-  // Password: "jade2026" → SHA-256 hash below
-  passwordHash: "5dcac14aa147b589374b65d60d80a7c35e8ddd5cd920b7f399386312ebf33176",
+  // Password: "JadesSpice@2026!" → SHA-256 hash below
+  passwordHash: "4ef984cbcaa678fcdd7ecd6162254ac4fc5fcc9fa4212bc38a9c5c80b1091563",
 
   /* ── Section Definitions ──────────────────────── */
   sections: [
