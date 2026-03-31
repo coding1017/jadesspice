@@ -14,20 +14,20 @@
    TOKENS
    ================================================================ */
 :root {
-  --black: #0C0806;
-  --dark: #14100C;
-  --surface: #1C1612;
-  --surface2: #261E18;
-  --border: #3D2E22;
+  --black: #FFF8F0;
+  --dark: #F7F1E8;
+  --surface: #FFFFFF;
+  --surface2: #F3EDE4;
+  --border: #E4DDD3;
   --accent: #D94040;
   --accent2: #F0A830;
-  --white: #FFF8F0;
+  --white: #1A1210;
   --muted: #8A7A6E;
-  --text: #D4C4B4;
-  --red: #EF4444;
-  --red2: #7F1D1D;
+  --text: #554840;
+  --red: #D94040;
+  --red2: #B83030;
   --green: #3DAA6D;
-  --green2: #1A4D30;
+  --green2: #2D8A55;
   --font-head: 'Barlow Condensed', sans-serif;
   --font-body: 'Barlow', sans-serif;
   --sidebar-w: 240px;
@@ -53,14 +53,14 @@ input, textarea, select {
 }
 input:focus, textarea:focus, select:focus { border-color: var(--accent); }
 input::placeholder, textarea::placeholder { color: var(--muted); }
-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A7A6E' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23554840' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
 textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 
 /* ================================================================
    PASSWORD GATE
    ================================================================ */
 .gate-overlay {
-  position: fixed; inset: 0; background: linear-gradient(135deg, #0C0806 0%, #1C1612 50%, #0C0806 100%); z-index: 2000;
+  position: fixed; inset: 0; background: linear-gradient(135deg, #F7F1E8 0%, #FFF8F0 50%, #F7F1E8 100%); z-index: 2000;
   display: flex; align-items: center; justify-content: center; flex-direction: column;
 }
 .gate-overlay.hidden { display: none; }
@@ -72,7 +72,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   width: 56px; height: 56px; border-radius: 14px; margin: 0 auto 20px;
   display: flex; align-items: center; justify-content: center;
 }
-.gate-icon svg { width: 28px; height: 28px; color: var(--white); }
+.gate-icon svg { width: 28px; height: 28px; color: #fff; }
 .gate-title {
   font-family: var(--font-head); font-weight: 800; font-size: 24px;
   color: var(--white); margin-bottom: 8px; letter-spacing: 0.02em;
@@ -85,7 +85,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-sm); transition: background var(--transition);
 }
-.gate-input-wrap button:hover { background: rgba(255,255,255,0.06); }
+.gate-input-wrap button:hover { background: rgba(0,0,0,0.06); }
 .gate-input-wrap button svg { width: 16px; height: 16px; color: var(--muted); }
 .gate-btn {
   width: 100%; padding: 14px; border-radius: var(--radius-sm); font-weight: 700;
@@ -170,19 +170,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
   padding: 16px 20px; border-top: 1px solid var(--border);
   display: flex; flex-direction: column; gap: 10px;
 }
-.sidebar-status {
-  display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted);
-}
-.sidebar-status-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0;
-}
-.sidebar-status-dot.disconnected { background: var(--red); }
 .sidebar-footer a {
   display: flex; align-items: center; gap: 8px; font-size: 13px;
   color: var(--muted); transition: color var(--transition);
 }
 .sidebar-footer a:hover { color: var(--accent); }
 .sidebar-footer a svg { width: 14px; height: 14px; }
+.sidebar-logout { color: var(--red) !important; }
+.sidebar-logout:hover { opacity: 0.8; }
 
 /* ================================================================
    MAIN LAYOUT
@@ -532,22 +527,22 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="sidebar-logo-icon" id="sidebarLogoIcon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#08060E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg>
     </div>
     <div>
-      <div class="sidebar-logo-text" id="sidebarSiteName">Site Name</div>
+      <div class="sidebar-logo-text" id="sidebarSiteName">Jade's Spice</div>
       <div class="sidebar-logo-sub" id="sidebarTagline">Content Manager</div>
     </div>
   </div>
   <nav class="sidebar-nav" id="sidebarNav"></nav>
   <div class="sidebar-footer">
-    <div class="sidebar-status" id="sidebarStatus">
-      <div class="sidebar-status-dot disconnected" id="statusDot"></div>
-      <span id="statusText">Not connected</span>
-    </div>
     <a href="#" id="sidebarSiteLink" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       View Live Site
+    </a>
+    <a href="#" onclick="event.preventDefault(); sessionStorage.removeItem('cms_auth'); location.reload();" class="sidebar-logout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Log Out
     </a>
   </div>
 </aside>
@@ -862,7 +857,7 @@ function buildSidebar() {
 
   // Live site link
   var link = document.getElementById('sidebarSiteLink');
-  link.href = 'https://' + CMS_CONFIG.github.owner + '.github.io/' + CMS_CONFIG.github.repo + '/';
+  link.href = CMS_CONFIG.siteUrl || ('https://' + CMS_CONFIG.github.repo + '.com/');
 }
 
 function navigateToSection(key) {
