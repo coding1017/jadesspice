@@ -140,6 +140,21 @@
     }).join('');
   }
 
+  /* Re-observe any .reveal elements that were dynamically inserted */
+  function reobserveReveals() {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal:not(.visible)').forEach(function(el) {
+      observer.observe(el);
+    });
+  }
+
   // Main loader
   fetch('/site-data.json?v=' + Date.now())
     .then(function(r) { return r.ok ? r.json() : Promise.reject('fetch failed'); })
@@ -152,6 +167,7 @@
       hydrateTestimonials(data);
       hydrateAbout(data);
       hydrateKitchen(data);
+      reobserveReveals();
     })
     .catch(function(err) {
       // Silent fail — hardcoded HTML remains
